@@ -1,6 +1,6 @@
 
 	package dao;
-
+    import java.sql.ResultSet;
 	import conexion.ConexionBD;
 	import modelo.Usuario;
 
@@ -38,5 +38,44 @@
 	            System.out.println("Error al guardar usuario");
 	            System.out.println(e.getMessage());
 	        }
+	        
 	    }
+	    public Usuario iniciarSesion(String correo,
+                String contrasena) {
+
+             Usuario usuario = null;
+
+              try {
+
+                 Connection con = ConexionBD.getConexion();
+
+                String sql = "SELECT * FROM usuario "
+                         + "WHERE correo = ? "
+                         + "AND contrasena = ?";
+
+                 PreparedStatement ps =
+                 con.prepareStatement(sql);
+ 
+               ps.setString(1, correo);
+               ps.setString(2, contrasena);
+
+                   ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+          usuario = new Usuario();
+
+                  usuario.setId(rs.getInt("id"));
+                  usuario.setNombre(rs.getString("nombre"));
+                  usuario.setCorreo(rs.getString("correo"));
+                  usuario.setRol(rs.getString("rol"));
+}
+
+       } catch (Exception e) {
+
+    System.out.println("Error login");
+    System.out.println(e.getMessage()); }
+
+   return usuario;
+  } 
 }
