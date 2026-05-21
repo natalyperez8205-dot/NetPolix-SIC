@@ -29,3 +29,4 @@ replay_pid*
 bin/
 db.properties
 .DS_Store
+db.properties.txt
