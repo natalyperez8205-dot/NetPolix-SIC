@@ -1,5 +1,4 @@
 package conexion;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,9 +6,9 @@ import java.sql.SQLException;
 public class ConexionBD {
     
     private static final String URL = 
-        "jdbc:mysql://localhost:3306/netpolix";
+        "jdbc:mysql://kodama.proxy.rlwy.net:57061/railway?useSSL=false&allowPublicKeyRetrieval=true";
     private static final String USUARIO = "root";
-    private static final String CONTRASENA = "netpolix123";
+    private static final String CONTRASENA = "BophDFCNxkjaRwaHxcQNVMXqCBvmvtGN";
     
     public static Connection getConexion() {
         try {
