@@ -2,40 +2,53 @@ package modelo;
 
 public class Video {
     private int id;
-    private String isan;
     private String tituloOriginal;
-    private int anio;
+    private String categoria;
+    private String actores;
     private int duracion;
-    private int idClasificacion;
+    private String edadRestriccion;
+    private String idioma;
+    private double precio;
 
     public Video() {}
 
-    public Video(int id, String isan, String tituloOriginal, 
-                 int anio, int duracion, int idClasificacion) {
+    public Video(int id, String tituloOriginal, String categoria,
+                 String actores, int duracion, String edadRestriccion,
+                 String idioma, double precio) {
         this.id = id;
-        this.isan = isan;
         this.tituloOriginal = tituloOriginal;
-        this.anio = anio;
+        this.categoria = categoria;
+        this.actores = actores;
         this.duracion = duracion;
-        this.idClasificacion = idClasificacion;
+        this.edadRestriccion = edadRestriccion;
+        this.idioma = idioma;
+        this.precio = precio;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-    public String getIsan() { return isan; }
-    public void setIsan(String isan) { this.isan = isan; }
     public String getTituloOriginal() { return tituloOriginal; }
-    public void setTituloOriginal(String tituloOriginal) { 
-        this.tituloOriginal = tituloOriginal; }
-    public int getAnio() { return anio; }
-    public void setAnio(int anio) { this.anio = anio; }
+    public void setTituloOriginal(String tituloOriginal) {
+        this.tituloOriginal = tituloOriginal;
+    }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public String getActores() { return actores; }
+    public void setActores(String actores) { this.actores = actores; }
     public int getDuracion() { return duracion; }
     public void setDuracion(int duracion) { this.duracion = duracion; }
-    public int getIdClasificacion() { return idClasificacion; }
-    public void setIdClasificacion(int idClasificacion) { 
-        this.idClasificacion = idClasificacion; }
-}
+    public String getEdadRestriccion() { return edadRestriccion; }
+    public void setEdadRestriccion(String edadRestriccion) { this.edadRestriccion = edadRestriccion; }
+    public String getIdioma() { return idioma; }
+    public void setIdioma(String idioma) { this.idioma = idioma; }
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
 
+    @Override
+    public String toString() {
+        return tituloOriginal + " | " + categoria + " | " + edadRestriccion + " | " + idioma + " | " + duracion + " min";
+    }
+}
 
 //Canibrouston
 
