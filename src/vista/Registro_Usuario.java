@@ -1,10 +1,13 @@
 package vista;
 import javax.swing.*;
+import java.time.LocalDate;
 import dao.Usuario_Dao;
 import modelo.Usuario;
+import vista.Login;
+
 public class Registro_Usuario extends JFrame {
 
-	JLabel lblNombre;
+    JLabel lblNombre;
     JLabel lblCedula;
     JLabel lblCorreo;
     JLabel lblContrasena;
@@ -16,11 +19,12 @@ public class Registro_Usuario extends JFrame {
     JPasswordField txtContrasena;
 
     JButton btnRegistrar;
+    JButton btnVolver;
 
     public Registro_Usuario() {
 
         setTitle("Registro Usuario");
-        setSize(400, 300);
+        setSize(420, 380);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -29,7 +33,7 @@ public class Registro_Usuario extends JFrame {
         add(lblNombre);
 
         txtNombre = new JTextField();
-        txtNombre.setBounds(140, 30, 180, 25);
+        txtNombre.setBounds(140, 30, 220, 25);
         add(txtNombre);
 
         lblCedula = new JLabel("Cédula:");
@@ -37,7 +41,7 @@ public class Registro_Usuario extends JFrame {
         add(lblCedula);
 
         txtCedula = new JTextField();
-        txtCedula.setBounds(140, 70, 180, 25);
+        txtCedula.setBounds(140, 70, 220, 25);
         add(txtCedula);
 
         lblCorreo = new JLabel("Correo:");
@@ -45,7 +49,7 @@ public class Registro_Usuario extends JFrame {
         add(lblCorreo);
 
         txtCorreo = new JTextField();
-        txtCorreo.setBounds(140, 110, 180, 25);
+        txtCorreo.setBounds(140, 110, 220, 25);
         add(txtCorreo);
 
         lblContrasena = new JLabel("Contraseña:");
@@ -53,13 +57,17 @@ public class Registro_Usuario extends JFrame {
         add(lblContrasena);
 
         txtContrasena = new JPasswordField();
-        txtContrasena.setBounds(140, 150, 180, 25);
+        txtContrasena.setBounds(140, 150, 220, 25);
         add(txtContrasena);
 
         btnRegistrar = new JButton("Registrar");
-        btnRegistrar.setBounds(140, 200, 120, 30);
+        btnRegistrar.setBounds(140, 210, 120, 30);
         add(btnRegistrar);
-        
+
+        btnVolver = new JButton("Volver");
+        btnVolver.setBounds(280, 210, 100, 30);
+        add(btnVolver);
+
         btnRegistrar.addActionListener(e -> {
 
             Usuario usuario = new Usuario();
@@ -67,21 +75,29 @@ public class Registro_Usuario extends JFrame {
             usuario.setNombre(txtNombre.getText());
             usuario.setCedula(txtCedula.getText());
             usuario.setCorreo(txtCorreo.getText());
-            usuario.setContrasena(txtContrasena.getText());
+            usuario.setContrasena(new String(txtContrasena.getPassword()));
 
-            usuario.setRol("cliente");
-            usuario.setFechaIngreso("2026-05-20");
+            usuario.setRol("CLIENTE");
+            usuario.setFechaIngreso(LocalDate.now().toString());
             usuario.setPuntos(0);
             usuario.setSaldo(0);
             usuario.setIdReferido(0);
 
             Usuario_Dao dao = new Usuario_Dao();
-
             dao.guardarUsuario(usuario);
 
             JOptionPane.showMessageDialog(null,
                     "Usuario registrado correctamente");
 
+            Login login = new Login();
+            login.setVisible(true);
+            dispose();
+        });
+
+        btnVolver.addActionListener(e -> {
+            Login login = new Login();
+            login.setVisible(true);
+            dispose();
         });
     }
 }

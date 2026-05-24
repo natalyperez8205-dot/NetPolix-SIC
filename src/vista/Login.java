@@ -6,6 +6,7 @@ import javax.swing.*;
 import vista.Menu_Cliente;
 import vista.Menu_Administrador;
 import vista.Menu_Gerente;
+import vista.Registro_Usuario;
 
 public class Login extends JFrame {
 
@@ -16,11 +17,12 @@ public class Login extends JFrame {
     JPasswordField txtContrasena;
 
     JButton btnIngresar;
+    JButton btnRegistrar;
 
     public Login() {
 
         setTitle("Login");
-        setSize(400,250);
+        setSize(420,300);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -44,13 +46,17 @@ public class Login extends JFrame {
         btnIngresar.setBounds(140,150,120,30);
         add(btnIngresar);
 
+        btnRegistrar = new JButton("Registrar cuenta");
+        btnRegistrar.setBounds(140,200,160,30);
+        add(btnRegistrar);
+
         btnIngresar.addActionListener(e -> {
 
             Usuario_Dao dao = new Usuario_Dao();
 
             Usuario usuario = dao.iniciarSesion(
                     txtCorreo.getText(),
-                    txtContrasena.getText()
+                    new String(txtContrasena.getPassword())
             );
 
             if(usuario != null){
@@ -59,38 +65,30 @@ public class Login extends JFrame {
                         "Bienvenido "
                                 + usuario.getNombre());
 
-                if(usuario.getRol().trim().equalsIgnoreCase("cliente")){
-
-                    Menu_Cliente menu =
-                            new Menu_Cliente();
-
+if(usuario.getRol().trim().equalsIgnoreCase("CLIENTE")){
+                    Menu_Cliente menu = new Menu_Cliente(usuario);
                     menu.setVisible(true);
-
-                }else 
-                	
-                	if(usuario.getRol().trim().equalsIgnoreCase("administrador")){
-
+                } else if(usuario.getRol().trim().equalsIgnoreCase("ADMINISTRADOR")){
                     Menu_Administrador menu = new Menu_Administrador();
-
                     menu.setVisible(true);
-
-                }else 
-                	if(usuario.getRol().trim().equalsIgnoreCase("gerente")){
-
+                } else if(usuario.getRol().trim().equalsIgnoreCase("GERENTE")){
                     Menu_Gerente menu = new Menu_Gerente();
-
                     menu.setVisible(true);
                 }
 
                 dispose();
 
-            }else{
-
+            } else {
                 JOptionPane.showMessageDialog(null,
                         "Datos incorrectos");
             }
 
         });
 
+        btnRegistrar.addActionListener(e -> {
+            Registro_Usuario registro = new Registro_Usuario();
+            registro.setVisible(true);
+            dispose();
+        });
     }
 }
