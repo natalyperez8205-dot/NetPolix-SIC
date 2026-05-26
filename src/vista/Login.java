@@ -3,92 +3,156 @@ package vista;
 import dao.Usuario_Dao;
 import modelo.Usuario;
 import javax.swing.*;
-import vista.Menu_Cliente;
-import vista.Menu_Administrador;
-import vista.Menu_Gerente;
-import vista.Registro_Usuario;
+import java.awt.*;
 
 public class Login extends JFrame {
 
-    JLabel lblCorreo;
-    JLabel lblContrasena;
-
     JTextField txtCorreo;
     JPasswordField txtContrasena;
-
     JButton btnIngresar;
     JButton btnRegistrar;
+    JButton btnSalir;
 
     public Login() {
 
-        setTitle("Login");
-        setSize(420,300);
+        setTitle("NetPOLIx");
+        setSize(480, 560);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        lblCorreo = new JLabel("Correo:");
-        lblCorreo.setBounds(30,40,100,25);
+        // LOGO
+        JLabel lblLogo = new JLabel("NET");
+        lblLogo.setBounds(90, 45, 200, 60);
+        lblLogo.setFont(new Font("SansSerif", Font.BOLD, 52));
+        lblLogo.setForeground(Estilos.ACENTO);
+        add(lblLogo);
+
+        JLabel lblLogo2 = new JLabel("POLIx");
+        lblLogo2.setBounds(210, 45, 220, 60);
+        lblLogo2.setFont(new Font("SansSerif", Font.BOLD, 52));
+        lblLogo2.setForeground(Estilos.TEXTO);
+        add(lblLogo2);
+
+        JLabel lblSub = new JLabel("Tu plataforma de streaming");
+        lblSub.setBounds(100, 108, 300, 20);
+        lblSub.setFont(Estilos.FUENTE_NORMAL);
+        lblSub.setForeground(Estilos.TEXTO_GRIS);
+        add(lblSub);
+
+        JSeparator sep = new JSeparator();
+        sep.setBounds(60, 138, 350, 2);
+        sep.setForeground(Estilos.BORDE);
+        add(sep);
+
+        // CORREO
+        JLabel lblCorreo = new JLabel("Correo electrónico");
+        lblCorreo.setBounds(60, 155, 200, 20);
+        lblCorreo.setFont(Estilos.FUENTE_SUBTIT);
+        lblCorreo.setForeground(Estilos.TEXTO_GRIS);
         add(lblCorreo);
 
         txtCorreo = new JTextField();
-        txtCorreo.setBounds(140,40,180,25);
+        txtCorreo.setBounds(60, 178, 350, 38);
+        Estilos.campo(txtCorreo);
         add(txtCorreo);
 
-        lblContrasena = new JLabel("Contraseña:");
-        lblContrasena.setBounds(30,90,100,25);
-        add(lblContrasena);
+        // CONTRASEÑA
+        JLabel lblPass = new JLabel("Contraseña");
+        lblPass.setBounds(60, 228, 200, 20);
+        lblPass.setFont(Estilos.FUENTE_SUBTIT);
+        lblPass.setForeground(Estilos.TEXTO_GRIS);
+        add(lblPass);
 
         txtContrasena = new JPasswordField();
-        txtContrasena.setBounds(140,90,180,25);
+        txtContrasena.setBounds(60, 251, 350, 38);
+        Estilos.campo(txtContrasena);
         add(txtContrasena);
 
-        btnIngresar = new JButton("Ingresar");
-        btnIngresar.setBounds(140,150,120,30);
+        // BOTÓN INGRESAR
+        btnIngresar = new JButton("INGRESAR");
+        btnIngresar.setBounds(60, 315, 350, 42);
+        Estilos.botonPrincipal(btnIngresar);
+        btnIngresar.setFont(new Font("SansSerif", Font.BOLD, 15));
         add(btnIngresar);
 
-        btnRegistrar = new JButton("Registrar cuenta");
-        btnRegistrar.setBounds(140,200,160,30);
+        // BOTÓN REGISTRAR
+        btnRegistrar = new JButton("¿No tienes cuenta? Regístrate");
+        btnRegistrar.setBounds(60, 370, 350, 38);
+        Estilos.botonSecundario(btnRegistrar);
         add(btnRegistrar);
 
+        // BOTÓN SALIR
+        btnSalir = new JButton("✕  Salir del programa");
+        btnSalir.setBounds(60, 420, 350, 38);
+        btnSalir.setBackground(new Color(30, 30, 30));
+        btnSalir.setForeground(Estilos.TEXTO_GRIS);
+        btnSalir.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        btnSalir.setFocusPainted(false);
+        btnSalir.setBorderPainted(false);
+        btnSalir.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        add(btnSalir);
+
+        JLabel lblVersion = new JLabel(
+                "NetPOLIx © 2026 - Politécnico Gran Colombiano");
+        lblVersion.setBounds(60, 490, 380, 18);
+        lblVersion.setFont(new Font("SansSerif", Font.PLAIN, 10));
+        lblVersion.setForeground(Estilos.BORDE);
+        add(lblVersion);
+
+        // EVENTOS
         btnIngresar.addActionListener(e -> {
+            String correo = txtCorreo.getText().trim();
+            String pass   = new String(txtContrasena.getPassword()).trim();
+
+            if (correo.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        "Completa todos los campos.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             Usuario_Dao dao = new Usuario_Dao();
+            Usuario usuario = dao.iniciarSesion(correo, pass);
 
-            Usuario usuario = dao.iniciarSesion(
-                    txtCorreo.getText(),
-                    new String(txtContrasena.getPassword())
-            );
-
-            if(usuario != null){
-
+            if (usuario != null) {
                 JOptionPane.showMessageDialog(null,
-                        "Bienvenido "
-                                + usuario.getNombre());
+                        "¡Bienvenido, " + usuario.getNombre() + "!",
+                        "Acceso concedido",
+                        JOptionPane.INFORMATION_MESSAGE);
 
-if(usuario.getRol().trim().equalsIgnoreCase("CLIENTE")){
-                    Menu_Cliente menu = new Menu_Cliente(usuario);
-                    menu.setVisible(true);
-                } else if(usuario.getRol().trim().equalsIgnoreCase("ADMINISTRADOR")){
-                    Menu_Administrador menu = new Menu_Administrador();
-                    menu.setVisible(true);
-                } else if(usuario.getRol().trim().equalsIgnoreCase("GERENTE")){
-                    Menu_Gerente menu = new Menu_Gerente();
-                    menu.setVisible(true);
+                String rol = usuario.getRol().trim().toUpperCase();
+                if (rol.equals("CLIENTE")) {
+                    new Menu_Cliente(usuario).setVisible(true);
+                } else if (rol.equals("ADMINISTRADOR")) {
+                    new Menu_Administrador().setVisible(true);
+                } else if (rol.equals("GERENTE")) {
+                    new Menu_Gerente().setVisible(true);
                 }
-
                 dispose();
 
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "Datos incorrectos");
+                        "Correo o contraseña incorrectos.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
-
         });
 
         btnRegistrar.addActionListener(e -> {
-            Registro_Usuario registro = new Registro_Usuario();
-            registro.setVisible(true);
+            new Registro_Usuario().setVisible(true);
             dispose();
         });
+
+        btnSalir.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "¿Deseas salir de NetPOLIx?",
+                    "Salir", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        });
+
+        setLocationRelativeTo(null);
     }
 }

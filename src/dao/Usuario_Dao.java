@@ -174,4 +174,136 @@ public class Usuario_Dao {
             System.out.println("Error editar usuario: " + e.getMessage());
         }
     }
+    public double obtenerSaldo(int idUsuario) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return 0;
+
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT saldo FROM usuario WHERE id = ?");
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                double saldo = rs.getDouble("saldo");
+                rs.close(); ps.close();
+                return saldo;
+            }
+        } catch (Exception e) {
+            System.out.println("Error obtener saldo: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
+        }
+        return 0;
+    }
+
+    public int obtenerPuntos(int idUsuario) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return 0;
+
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT puntos FROM usuario WHERE id = ?");
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int puntos = rs.getInt("puntos");
+                rs.close(); ps.close();
+                return puntos;
+            }
+        } catch (Exception e) {
+            System.out.println("Error obtener puntos: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
+        }
+        return 0;
+    }
+
+    public boolean descontarSaldo(int idUsuario, double monto) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return false;
+
+            // Verificar saldo suficiente
+            double saldoActual = obtenerSaldo(idUsuario);
+            if (saldoActual < monto) return false;
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE usuario SET saldo = saldo - ? WHERE id = ?");
+            ps.setDouble(1, monto);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+            ps.close();
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error descontar saldo: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
+        }
+        return false;
+    }
+
+    public void sumarPuntos(int idUsuario, int puntos) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return;
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE usuario SET puntos = puntos + ? WHERE id = ?");
+            ps.setInt(1, puntos);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+            ps.close();
+            System.out.println("Puntos sumados: " + puntos);
+
+        } catch (Exception e) {
+            System.out.println("Error sumar puntos: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
+        }
+    }
+    public void editarUsuarioCompleto(int id, String nombre,
+            String correo, String rol) {
+Connection con = null;
+try {
+con = ConexionBD.getConexion();
+if (con == null) return;
+
+PreparedStatement ps = con.prepareStatement(
+"UPDATE usuario SET nombre = ?, correo = ?, rol = ? WHERE id = ?");
+ps.setString(1, nombre);
+ps.setString(2, correo);
+ps.setString(3, rol);
+ps.setInt(4, id);
+ps.executeUpdate();
+ps.close();
+System.out.println("Usuario editado completo");
+
+} catch (Exception e) {
+System.out.println("Error editar usuario: " + e.getMessage());
+} finally {
+try { if (con != null) con.close(); } catch (Exception ex) {}
+}
+}public void recargarSaldo(int idUsuario, double monto) {
+    Connection con = null;
+    try {
+        con = ConexionBD.getConexion();
+        if (con == null) return;
+        PreparedStatement ps = con.prepareStatement(
+            "UPDATE usuario SET saldo = saldo + ? WHERE id = ?");
+        ps.setDouble(1, monto);
+        ps.setInt(2, idUsuario);
+        ps.executeUpdate();
+        ps.close();
+        System.out.println("Saldo recargado: " + monto);
+    } catch (Exception e) {
+        System.out.println("Error recargar saldo: " + e.getMessage());
+    } finally {
+        try { if (con != null) con.close(); } catch (Exception ex) {}
+    }
+}
 }

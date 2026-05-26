@@ -11,69 +11,84 @@ public class GestionarSerie extends JFrame {
 
     JTextField txtTitulo;
     JTextField txtTemporada;
-    JButton btnGuardar;
-    JButton btnEditar;
-    JButton btnEliminar;
-    JButton btnVolver;
     JTable tabla;
     DefaultTableModel modelo;
 
-    private final Serie_Dao dao = new Serie_Dao();
-
     public GestionarSerie() {
 
-        setTitle("Gestionar Series");
-        setSize(580, 480);
+        setTitle("NetPOLIx — Series");
+        setSize(620, 560);
         setLayout(null);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        JLabel lblTitulo = new JLabel("GESTIÓN DE SERIES");
-        lblTitulo.setBounds(190, 15, 250, 25);
-        lblTitulo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        add(lblTitulo);
+        Serie_Dao dao = new Serie_Dao();
 
-        JLabel lblTit = new JLabel("Título:");
-        lblTit.setBounds(20, 55, 100, 25);
-        add(lblTit);
+        // HEADER
+        JPanel header = new JPanel(null);
+        header.setBounds(0, 0, 620, 65);
+        header.setBackground(Estilos.PANEL);
+
+        JLabel lblNet = new JLabel("NET");
+        lblNet.setBounds(20, 10, 100, 45);
+        lblNet.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblNet.setForeground(Estilos.ACENTO);
+        header.add(lblNet);
+
+        JLabel lblPolix = new JLabel("POLIx");
+        lblPolix.setBounds(93, 10, 140, 45);
+        lblPolix.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblPolix.setForeground(Estilos.TEXTO);
+        header.add(lblPolix);
+
+        JLabel lblSub = new JLabel("📺  Gestión de series");
+        lblSub.setBounds(290, 22, 300, 22);
+        lblSub.setFont(Estilos.FUENTE_SUBTIT);
+        lblSub.setForeground(Estilos.TEXTO_GRIS);
+        header.add(lblSub);
+        add(header);
+
+        // CAMPOS
+        JLabel lblT = new JLabel("Título:");
+        lblT.setBounds(20, 82, 80, 18);
+        lblT.setFont(Estilos.FUENTE_SUBTIT);
+        lblT.setForeground(Estilos.TEXTO_GRIS);
+        add(lblT);
 
         txtTitulo = new JTextField();
-        txtTitulo.setBounds(130, 55, 380, 25);
+        txtTitulo.setBounds(20, 103, 360, 36);
+        Estilos.campo(txtTitulo);
         add(txtTitulo);
 
-        JLabel lblTemp = new JLabel("Temporada:");
-        lblTemp.setBounds(20, 90, 100, 25);
-        add(lblTemp);
+        JLabel lblTmp = new JLabel("Temporada:");
+        lblTmp.setBounds(395, 82, 100, 18);
+        lblTmp.setFont(Estilos.FUENTE_SUBTIT);
+        lblTmp.setForeground(Estilos.TEXTO_GRIS);
+        add(lblTmp);
 
         txtTemporada = new JTextField();
-        txtTemporada.setBounds(130, 90, 150, 25);
+        txtTemporada.setBounds(395, 103, 80, 36);
+        Estilos.campo(txtTemporada);
         add(txtTemporada);
 
-        btnGuardar = new JButton("Guardar");
-        btnGuardar.setBounds(20, 130, 110, 30);
+        JButton btnGuardar = new JButton("➕ Guardar");
+        btnGuardar.setBounds(490, 103, 105, 36);
+        Estilos.botonPrincipal(btnGuardar);
         add(btnGuardar);
 
-        btnEditar = new JButton("Editar");
-        btnEditar.setBounds(145, 130, 110, 30);
-        add(btnEditar);
-
-        btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBounds(270, 130, 110, 30);
-        add(btnEliminar);
-
-        btnVolver = new JButton("Volver");
-        btnVolver.setBounds(395, 130, 110, 30);
-        add(btnVolver);
-
-        modelo = new DefaultTableModel();
+        // TABLA
+        modelo = new DefaultTableModel() {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
         modelo.addColumn("ID");
         modelo.addColumn("Título");
         modelo.addColumn("Temporada");
 
         tabla = new JTable(modelo);
-        JScrollPane scroll = new JScrollPane(tabla);
-        scroll.setBounds(20, 175, 520, 255);
-        add(scroll);
+        Estilos.tabla(tabla);
 
+        // al seleccionar fila carga en campos
         tabla.getSelectionModel().addListSelectionListener(e -> {
             int fila = tabla.getSelectedRow();
             if (fila >= 0) {
@@ -82,10 +97,33 @@ public class GestionarSerie extends JFrame {
             }
         });
 
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setBounds(20, 155, 565, 290);
+        Estilos.scroll(scroll);
+        add(scroll);
+
+        // BOTONES
+        JButton btnEditar   = new JButton("✏ Editar");
+        btnEditar.setBounds(20, 460, 160, 40);
+        Estilos.botonPrincipal(btnEditar);
+        add(btnEditar);
+
+        JButton btnEliminar = new JButton("🗑 Eliminar");
+        btnEliminar.setBounds(195, 460, 160, 40);
+        Estilos.botonPrincipal(btnEliminar);
+        btnEliminar.setBackground(new Color(150, 20, 20));
+        add(btnEliminar);
+
+        JButton btnVolver   = new JButton("← Volver");
+        btnVolver.setBounds(430, 460, 155, 40);
+        Estilos.botonSecundario(btnVolver);
+        add(btnVolver);
+
+        // EVENTOS
         btnGuardar.addActionListener(e -> {
             if (txtTitulo.getText().trim().isEmpty()
                     || txtTemporada.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Complete todos los campos.");
+                JOptionPane.showMessageDialog(null, "Completa todos los campos.");
                 return;
             }
             try {
@@ -93,10 +131,9 @@ public class GestionarSerie extends JFrame {
                 s.setTitulo(txtTitulo.getText().trim());
                 s.setTemporada(Integer.parseInt(txtTemporada.getText().trim()));
                 dao.guardarSerie(s);
-                JOptionPane.showMessageDialog(null, "Serie guardada.");
-                txtTitulo.setText("");
-                txtTemporada.setText("");
-                cargar();
+                JOptionPane.showMessageDialog(null, "✅ Serie guardada.");
+                limpiar();
+                cargar(dao);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "La temporada debe ser un número.");
             }
@@ -105,7 +142,7 @@ public class GestionarSerie extends JFrame {
         btnEditar.addActionListener(e -> {
             int fila = tabla.getSelectedRow();
             if (fila == -1) {
-                JOptionPane.showMessageDialog(null, "Seleccione una serie.");
+                JOptionPane.showMessageDialog(null, "Selecciona una serie.");
                 return;
             }
             try {
@@ -113,10 +150,9 @@ public class GestionarSerie extends JFrame {
                 dao.editarSerie(id,
                         txtTitulo.getText().trim(),
                         Integer.parseInt(txtTemporada.getText().trim()));
-                JOptionPane.showMessageDialog(null, "Serie actualizada.");
-                txtTitulo.setText("");
-                txtTemporada.setText("");
-                cargar();
+                JOptionPane.showMessageDialog(null, "✅ Serie actualizada.");
+                limpiar();
+                cargar(dao);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "La temporada debe ser un número.");
             }
@@ -125,28 +161,35 @@ public class GestionarSerie extends JFrame {
         btnEliminar.addActionListener(e -> {
             int fila = tabla.getSelectedRow();
             if (fila == -1) {
-                JOptionPane.showMessageDialog(null, "Seleccione una serie.");
+                JOptionPane.showMessageDialog(null, "Selecciona una serie.");
                 return;
             }
-            int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
-            int confirm = JOptionPane.showConfirmDialog(null, "¿Eliminar esta serie?");
+            String titulo = modelo.getValueAt(fila, 1).toString();
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "¿Eliminar \"" + titulo + "\"?");
             if (confirm == JOptionPane.YES_OPTION) {
+                int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
                 dao.eliminarSerie(id);
                 JOptionPane.showMessageDialog(null, "Serie eliminada.");
-                cargar();
+                limpiar();
+                cargar(dao);
             }
         });
 
         btnVolver.addActionListener(e -> dispose());
 
-        cargar();
+        cargar(dao);
+        setLocationRelativeTo(null);
     }
 
-    private void cargar() {
+    private void cargar(Serie_Dao dao) {
         modelo.setRowCount(0);
-        List<Serie> lista = dao.listarSeries();
-        for (Serie s : lista) {
+        for (Serie s : dao.listarSeries())
             modelo.addRow(new Object[]{s.getId(), s.getTitulo(), s.getTemporada()});
-        }
+    }
+
+    private void limpiar() {
+        txtTitulo.setText("");
+        txtTemporada.setText("");
     }
 }

@@ -1,101 +1,120 @@
 package vista;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Menu_Administrador extends JFrame {
 
-    JLabel lblTitulo;
-    JButton btnRegistrarVideo;
-    JButton btnVerCatalogo;
-    JButton btnVerUsuarios;
-    JButton btnVerCompras;
-    JButton btnGestionarIdiomas;
-    JButton btnGestionarSeries;
-    JButton btnGestionarClasificaciones;
-    JButton btnCerrarSesion;
-
     public Menu_Administrador() {
 
-        setTitle("Panel Administrador");
-        setSize(500, 650);
+        setTitle("NetPOLIx — Administrador");
+        setSize(500, 730);
         setLayout(null);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        lblTitulo = new JLabel("PANEL ADMINISTRADOR");
-        lblTitulo.setBounds(130, 30, 250, 30);
-        add(lblTitulo);
+        // HEADER
+        JPanel header = new JPanel(null);
+        header.setBounds(0, 0, 500, 80);
+        header.setBackground(Estilos.PANEL);
 
-        btnRegistrarVideo = new JButton("Registrar Video");
-        btnRegistrarVideo.setBounds(140, 80, 200, 40);
+        JLabel lblNet = new JLabel("NET");
+        lblNet.setBounds(20, 18, 120, 45);
+        lblNet.setFont(new Font("SansSerif", Font.BOLD, 36));
+        lblNet.setForeground(Estilos.ACENTO);
+        header.add(lblNet);
+
+        JLabel lblPolix = new JLabel("POLIx");
+        lblPolix.setBounds(98, 18, 150, 45);
+        lblPolix.setFont(new Font("SansSerif", Font.BOLD, 36));
+        lblPolix.setForeground(Estilos.TEXTO);
+        header.add(lblPolix);
+
+        JLabel lblRol = new JLabel("● ADMINISTRADOR");
+        lblRol.setBounds(240, 30, 230, 20);
+        lblRol.setFont(new Font("SansSerif", Font.BOLD, 12));
+        lblRol.setForeground(new Color(255, 165, 0));
+        header.add(lblRol);
+
+        add(header);
+
+        JLabel lblMenu = new JLabel("Panel de administración");
+        lblMenu.setBounds(30, 95, 400, 28);
+        lblMenu.setFont(Estilos.FUENTE_TITULO);
+        lblMenu.setForeground(Estilos.TEXTO);
+        add(lblMenu);
+
+        // BOTONES
+        JButton btnRegistrarVideo   = crearBoton("🎬  Registrar Video",          30, 140);
+        JButton btnVerCatalogo      = crearBoton("📋  Gestionar Catálogo",        30, 198);
+        JButton btnVerUsuarios      = crearBoton("👥  Ver Usuarios",              30, 256);
+        JButton btnRecargarSaldo    = crearBoton("💰  Recargar Saldo Cliente",    30, 314);
+        JButton btnVerCompras       = crearBoton("🛒  Ver Compras",               30, 372);
+        JButton btnGestionarIdiomas = crearBoton("🌐  Gestionar Idiomas",         30, 430);
+        JButton btnGestionarSeries  = crearBoton("📺  Gestionar Series",          30, 488);
+        JButton btnGestionarClasif  = crearBoton("🔞  Gestionar Clasificaciones", 30, 546);
+        JButton btnCerrarSesion     = crearBotonSec("⏻  Cerrar Sesión",           30, 630);
+
         add(btnRegistrarVideo);
-
-        btnVerCatalogo = new JButton("Gestionar Catálogo");
-        btnVerCatalogo.setBounds(140, 135, 200, 40);
         add(btnVerCatalogo);
-
-        btnVerUsuarios = new JButton("Ver Usuarios");
-        btnVerUsuarios.setBounds(140, 190, 200, 40);
         add(btnVerUsuarios);
-
-        btnVerCompras = new JButton("Ver Compras");
-        btnVerCompras.setBounds(140, 245, 200, 40);
+        add(btnRecargarSaldo);
         add(btnVerCompras);
-
-        btnGestionarIdiomas = new JButton("Gestionar Idiomas");
-        btnGestionarIdiomas.setBounds(140, 300, 200, 40);
         add(btnGestionarIdiomas);
-
-        btnGestionarSeries = new JButton("Gestionar Series");
-        btnGestionarSeries.setBounds(140, 355, 200, 40);
         add(btnGestionarSeries);
-
-        btnGestionarClasificaciones = new JButton("Clasificaciones");
-        btnGestionarClasificaciones.setBounds(140, 410, 200, 40);
-        add(btnGestionarClasificaciones);
-
-        btnCerrarSesion = new JButton("Cerrar Sesión");
-        btnCerrarSesion.setBounds(140, 490, 200, 40);
+        add(btnGestionarClasif);
         add(btnCerrarSesion);
 
-        btnRegistrarVideo.addActionListener(e -> {
-            RegistrarVideo ventana = new RegistrarVideo();
-            ventana.setVisible(true);
-        });
+        btnRegistrarVideo.addActionListener(e ->
+                new RegistrarVideo().setVisible(true));
 
-        btnVerCatalogo.addActionListener(e -> {
-            Catalogo_Video ventana = new Catalogo_Video();
-            ventana.setVisible(true);
-        });
+        btnVerCatalogo.addActionListener(e ->
+                new Catalogo_Video().setVisible(true));
 
-        btnVerUsuarios.addActionListener(e -> {
-            VerUsuario ventana = new VerUsuario();
-            ventana.setVisible(true);
-        });
+        btnVerUsuarios.addActionListener(e ->
+                new VerUsuario().setVisible(true));
 
-        btnVerCompras.addActionListener(e -> {
-            Ver_Compras ventana = new Ver_Compras();
-            ventana.setVisible(true);
-        });
+        btnRecargarSaldo.addActionListener(e ->
+                new RecargaSaldo().setVisible(true));
 
-        btnGestionarIdiomas.addActionListener(e -> {
-            GestionarIdioma ventana = new GestionarIdioma();
-            ventana.setVisible(true);
-        });
+        btnVerCompras.addActionListener(e ->
+                new Ver_Compras().setVisible(true));
 
-        btnGestionarSeries.addActionListener(e -> {
-            GestionarSerie ventana = new GestionarSerie();
-            ventana.setVisible(true);
-        });
+        btnGestionarIdiomas.addActionListener(e ->
+                new GestionarIdioma().setVisible(true));
 
-        btnGestionarClasificaciones.addActionListener(e -> {
-            GestionarClasificacion ventana = new GestionarClasificacion();
-            ventana.setVisible(true);
-        });
+        btnGestionarSeries.addActionListener(e ->
+                new GestionarSerie().setVisible(true));
+
+        btnGestionarClasif.addActionListener(e ->
+                new GestionarClasificacion().setVisible(true));
 
         btnCerrarSesion.addActionListener(e -> {
-            Login login = new Login();
-            login.setVisible(true);
+            new Login().setVisible(true);
             dispose();
         });
+
+        setLocationRelativeTo(null);
+    }
+
+    private JButton crearBoton(String texto, int x, int y) {
+        JButton btn = new JButton(texto);
+        btn.setBounds(x, y, 430, 46);
+        Estilos.botonPrincipal(btn);
+        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        return btn;
+    }
+
+    private JButton crearBotonSec(String texto, int x, int y) {
+        JButton btn = new JButton(texto);
+        btn.setBounds(x, y, 430, 46);
+        Estilos.botonSecundario(btn);
+        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        return btn;
     }
 }

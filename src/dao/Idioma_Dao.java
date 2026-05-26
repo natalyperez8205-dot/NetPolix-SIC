@@ -2,7 +2,6 @@ package dao;
 
 import conexion.ConexionBD;
 import modelo.Idioma;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,102 +10,70 @@ import java.util.List;
 
 public class Idioma_Dao {
 
-    public void guardarIdioma(
-            Idioma idioma){
+    public void guardarIdioma(Idioma idioma) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return;
 
-        try{
-
-            Connection con =
-                    ConexionBD.getConexion();
-
-            String sql =
-                    "INSERT INTO idioma(nombre) VALUES(?)";
-
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
-
-            ps.setString(
-                    1,
-                    idioma.getNombre());
-
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO idioma (lenguaje) VALUES (?)");
+            ps.setString(1, idioma.getNombre());
             ps.executeUpdate();
+            ps.close();
+            System.out.println("Idioma guardado: " + idioma.getNombre());
 
-            System.out.println(
-                    "Idioma guardado");
-
-        } catch(Exception e){
-
-            System.out.println(
-                    e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error guardar idioma: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
     }
 
-    public List<Idioma> listarIdiomas(){
+    public List<Idioma> listarIdiomas() {
+        List<Idioma> lista = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return lista;
 
-        List<Idioma> lista =
-                new ArrayList<>();
-
-        try{
-
-            Connection con =
-                    ConexionBD.getConexion();
-
-            String sql =
-                    "SELECT * FROM idioma";
-
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
-
-            ResultSet rs =
-                    ps.executeQuery();
-
-            while(rs.next()){
-
-                Idioma idioma =
-                        new Idioma();
-
-                idioma.setId(
-                        rs.getInt("id"));
-
-                idioma.setNombre(
-                        rs.getString("nombre"));
-
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT id, lenguaje FROM idioma ORDER BY lenguaje");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Idioma idioma = new Idioma();
+                idioma.setId(rs.getInt("id"));
+                idioma.setNombre(rs.getString("lenguaje"));
                 lista.add(idioma);
             }
+            rs.close();
+            ps.close();
 
-        } catch(Exception e){
-
-            System.out.println(
-                    e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error listar idiomas: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
-
         return lista;
     }
 
-    public void eliminarIdioma(int id){
+    public void eliminarIdioma(int id) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return;
 
-        try{
-
-            Connection con =
-                    ConexionBD.getConexion();
-
-            String sql =
-                    "DELETE FROM idioma WHERE id = ?";
-
-            PreparedStatement ps =
-                    con.prepareStatement(sql);
-
+            PreparedStatement ps = con.prepareStatement(
+                "DELETE FROM idioma WHERE id = ?");
             ps.setInt(1, id);
-
             ps.executeUpdate();
+            ps.close();
+            System.out.println("Idioma eliminado");
 
-            System.out.println(
-                    "Idioma eliminado");
-
-        } catch(Exception e){
-
-            System.out.println(
-                    e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error eliminar idioma: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
     }
 }

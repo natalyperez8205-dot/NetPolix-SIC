@@ -1,197 +1,235 @@
 package vista;
 
-import dao.Video_Dao;
 import dao.Categoria_Dao;
 import dao.Usuario_Dao;
-import modelo.Video;
+import dao.Video_Dao;
 import modelo.Categoria;
 import modelo.Usuario;
+import modelo.Video;
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
 public class RegistrarVideo extends JFrame {
 
-    JLabel lblTitulo;
-    JLabel lblCategoria;
-    JLabel lblActores;
-    JLabel lblDuracion;
-    JLabel lblEdadRestriccion;
-    JLabel lblIdioma;
-    JLabel lblPrecio;
-
     JTextField txtTitulo;
+    JTextField txtDuracion;
+    JTextField txtPrecio;
+    JTextField txtIdioma;
+    JTextField txtEdad;
     JComboBox<String> cbCategoria;
     JComboBox<String> cbActores;
-    JTextField txtDuracion;
-    JTextField txtEdadRestriccion;
-    JTextField txtIdioma;
-    JTextField txtPrecio;
 
-    JButton btnGuardar;
-    JButton btnVolver;
+    public RegistrarVideo() {
 
-    public RegistrarVideo(){
-
-        setTitle("Registrar Video");
-        setSize(520,540);
+        setTitle("NetPOLIx — Registrar Video");
+        setSize(560, 640);
         setLayout(null);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        lblTitulo = new JLabel("Título:");
-        lblTitulo.setBounds(40,40,120,25);
-        add(lblTitulo);
+        // HEADER
+        JPanel header = new JPanel(null);
+        header.setBounds(0, 0, 560, 65);
+        header.setBackground(Estilos.PANEL);
 
+        JLabel lblNet = new JLabel("NET");
+        lblNet.setBounds(20, 10, 100, 45);
+        lblNet.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblNet.setForeground(Estilos.ACENTO);
+        header.add(lblNet);
+
+        JLabel lblPolix = new JLabel("POLIx");
+        lblPolix.setBounds(93, 10, 140, 45);
+        lblPolix.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblPolix.setForeground(Estilos.TEXTO);
+        header.add(lblPolix);
+
+        JLabel lblSub = new JLabel("🎬  Registrar nueva película");
+        lblSub.setBounds(265, 22, 270, 22);
+        lblSub.setFont(Estilos.FUENTE_SUBTIT);
+        lblSub.setForeground(Estilos.TEXTO_GRIS);
+        header.add(lblSub);
+        add(header);
+
+        // CAMPOS
+        int xLabel = 25;
+        int xField = 25;
+        int w = 500;
+
+        // TÍTULO
+        agregarLabel("Título de la película:", xLabel, 82);
         txtTitulo = new JTextField();
-        txtTitulo.setBounds(180,40,260,25);
+        txtTitulo.setBounds(xField, 102, w, 36);
+        Estilos.campo(txtTitulo);
         add(txtTitulo);
 
-        lblCategoria = new JLabel("Categoría:");
-        lblCategoria.setBounds(40,90,120,25);
-        add(lblCategoria);
-
+        // CATEGORÍA
+        agregarLabel("Categoría:", xLabel, 152);
         cbCategoria = new JComboBox<>();
-        cbCategoria.setBounds(180,90,200,25);
+        cbCategoria.setBounds(xField, 172, 340, 36);
+        Estilos.combo(cbCategoria);
         add(cbCategoria);
 
-        JButton btnNuevaCategoria = new JButton("Nueva categoría");
-        btnNuevaCategoria.setBounds(390,90,140,25);
-        add(btnNuevaCategoria);
+        JButton btnNuevaCat = new JButton("➕ Nueva");
+        btnNuevaCat.setBounds(375, 172, 150, 36);
+        Estilos.botonSecundario(btnNuevaCat);
+        add(btnNuevaCat);
 
-        lblActores = new JLabel("Actores:");
-        lblActores.setBounds(40,140,120,25);
-        add(lblActores);
-
+        // ACTORES
+        agregarLabel("Actor principal:", xLabel, 222);
         cbActores = new JComboBox<>();
-        cbActores.setBounds(180,140,200,25);
+        cbActores.setBounds(xField, 242, 340, 36);
+        Estilos.combo(cbActores);
         add(cbActores);
 
-        JButton btnNuevoActor = new JButton("Registrar actor");
-        btnNuevoActor.setBounds(390,140,140,25);
+        JButton btnNuevoActor = new JButton("➕ Nuevo");
+        btnNuevoActor.setBounds(375, 242, 150, 36);
+        Estilos.botonSecundario(btnNuevoActor);
         add(btnNuevoActor);
 
-        lblDuracion = new JLabel("Duración (min):");
-        lblDuracion.setBounds(40,190,120,25);
-        add(lblDuracion);
-
+        // DURACIÓN Y PRECIO
+        agregarLabel("Duración (min):", xLabel, 292);
         txtDuracion = new JTextField();
-        txtDuracion.setBounds(180,190,260,25);
+        txtDuracion.setBounds(xField, 312, 235, 36);
+        Estilos.campo(txtDuracion);
         add(txtDuracion);
 
-        lblEdadRestriccion = new JLabel("Edad restricción:");
-        lblEdadRestriccion.setBounds(40,240,120,25);
-        add(lblEdadRestriccion);
-
-        txtEdadRestriccion = new JTextField();
-        txtEdadRestriccion.setBounds(180,240,260,25);
-        add(txtEdadRestriccion);
-
-        lblIdioma = new JLabel("Idioma:");
-        lblIdioma.setBounds(40,290,120,25);
-        add(lblIdioma);
-
-        txtIdioma = new JTextField();
-        txtIdioma.setBounds(180,290,260,25);
-        add(txtIdioma);
-
-        lblPrecio = new JLabel("Precio:");
-        lblPrecio.setBounds(40,340,120,25);
-        add(lblPrecio);
-
+        agregarLabel("Precio ($):", 290, 292);
         txtPrecio = new JTextField();
-        txtPrecio.setBounds(180,340,260,25);
+        txtPrecio.setBounds(290, 312, 235, 36);
+        Estilos.campo(txtPrecio);
         add(txtPrecio);
 
-        btnGuardar = new JButton("Guardar");
-        btnGuardar.setBounds(190,400,140,35);
+        // IDIOMA Y EDAD
+        agregarLabel("Idioma:", xLabel, 362);
+        txtIdioma = new JTextField();
+        txtIdioma.setBounds(xField, 382, 235, 36);
+        Estilos.campo(txtIdioma);
+        add(txtIdioma);
+
+        agregarLabel("Clasificación edad:", 290, 362);
+        txtEdad = new JTextField();
+        txtEdad.setBounds(290, 382, 235, 36);
+        Estilos.campo(txtEdad);
+        add(txtEdad);
+
+        // BOTONES
+        JButton btnGuardar = new JButton("💾  GUARDAR PELÍCULA");
+        btnGuardar.setBounds(25, 445, 500, 46);
+        Estilos.botonPrincipal(btnGuardar);
+        btnGuardar.setFont(new Font("SansSerif", Font.BOLD, 15));
         add(btnGuardar);
 
-        btnVolver = new JButton("Volver");
-        btnVolver.setBounds(190,445,140,35);
+        JButton btnVolver = new JButton("← Volver");
+        btnVolver.setBounds(25, 502, 500, 38);
+        Estilos.botonSecundario(btnVolver);
         add(btnVolver);
 
+        // EVENTOS
+        btnNuevaCat.addActionListener(e -> {
+            new RegistrarCategoria().setVisible(true);
+        });
+
+        btnNuevoActor.addActionListener(e -> {
+            new RegistrarActor().setVisible(true);
+        });
+
+        JButton btnRefCat = new JButton("🔄");
+        btnRefCat.setBounds(375, 210, 150, 25);
+        Estilos.botonSecundario(btnRefCat);
+        btnRefCat.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        add(btnRefCat);
+
+        JButton btnRefAct = new JButton("🔄");
+        btnRefAct.setBounds(375, 280, 150, 25);
+        Estilos.botonSecundario(btnRefAct);
+        btnRefAct.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        add(btnRefAct);
+
+        btnRefCat.addActionListener(e -> cargarCategorias());
+        btnRefAct.addActionListener(e -> cargarActores());
+
         btnGuardar.addActionListener(e -> {
+            if (txtTitulo.getText().trim().isEmpty()
+                    || txtDuracion.getText().trim().isEmpty()
+                    || txtPrecio.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        "Título, duración y precio son obligatorios.",
+                        "Campos incompletos",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
                 Video video = new Video();
-                video.setTituloOriginal(txtTitulo.getText());
-                String categoria = (String) cbCategoria.getSelectedItem();
-                String actor = (String) cbActores.getSelectedItem();
-                video.setCategoria(categoria != null ? categoria : "");
-                video.setActores(actor != null ? actor : "");
-                video.setDuracion(Integer.parseInt(txtDuracion.getText()));
+                video.setTituloOriginal(txtTitulo.getText().trim());
+                video.setCategoria(cbCategoria.getSelectedItem() != null
+                        ? cbCategoria.getSelectedItem().toString() : "");
+                video.setActores(cbActores.getSelectedItem() != null
+                        ? cbActores.getSelectedItem().toString() : "");
+                video.setDuracion(Integer.parseInt(txtDuracion.getText().trim()));
+                video.setPrecio(Double.parseDouble(txtPrecio.getText().trim()));
+                video.setIdioma(txtIdioma.getText().trim());
                 video.setEdadRestriccion(
-                	    Integer.parseInt(
-                	        txtEdadRestriccion.getText()));
-                video.setIdioma(txtIdioma.getText());
-                video.setPrecio(Double.parseDouble(txtPrecio.getText()));
+                        txtEdad.getText().trim().isEmpty() ? 0
+                        : Integer.parseInt(txtEdad.getText().trim()));
 
-                Video_Dao dao = new Video_Dao();
-                dao.guardarVideo(video);
+                new Video_Dao().guardarVideo(video);
 
                 JOptionPane.showMessageDialog(null,
-                        "Película registrada correctamente");
+                        "✅ Película registrada correctamente.",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-                txtTitulo.setText("");
-                txtDuracion.setText("");
-                txtEdadRestriccion.setText("");
-                txtIdioma.setText("");
-                txtPrecio.setText("");
+                limpiar();
+
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null,
-                        "Duración y precio deben ser numéricos.");
+                        "Duración y precio deben ser numéricos.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        // populate combo boxes
+        btnVolver.addActionListener(e -> dispose());
+
         cargarCategorias();
         cargarActores();
+        setLocationRelativeTo(null);
+    }
 
-        btnNuevoActor.addActionListener(a -> {
-            RegistrarActor ra = new RegistrarActor();
-            ra.setVisible(true);
-        });
-
-        btnNuevaCategoria.addActionListener(a -> {
-            RegistrarCategoria rc = new RegistrarCategoria();
-            rc.setVisible(true);
-        });
-
-        // buttons to refresh lists
-        JButton btnRefCats = new JButton("Refrescar cat.");
-        btnRefCats.setBounds(390,120,140,20);
-        add(btnRefCats);
-        btnRefCats.addActionListener(a -> cargarCategorias());
-
-        JButton btnRefAct = new JButton("Refrescar act.");
-        btnRefAct.setBounds(390,160,140,20);
-        add(btnRefAct);
-        btnRefAct.addActionListener(a -> cargarActores());
-
-        btnVolver.addActionListener(e -> dispose());
+    private void agregarLabel(String texto, int x, int y) {
+        JLabel lbl = new JLabel(texto);
+        lbl.setBounds(x, y, 250, 18);
+        lbl.setFont(Estilos.FUENTE_SUBTIT);
+        lbl.setForeground(Estilos.TEXTO_GRIS);
+        add(lbl);
     }
 
     private void cargarCategorias() {
         cbCategoria.removeAllItems();
         try {
-            Categoria_Dao dao = new Categoria_Dao();
-            List<Categoria> cats = dao.listarCategorias();
-            for (Categoria c : cats) {
+            for (Categoria c : new Categoria_Dao().listarCategorias())
                 cbCategoria.addItem(c.getNombre());
-            }
         } catch (Exception e) {
-            System.out.println("Error cargando categorias: " + e.getMessage());
+            System.out.println("Error categorias: " + e.getMessage());
         }
     }
 
     private void cargarActores() {
         cbActores.removeAllItems();
         try {
-            Usuario_Dao dao = new Usuario_Dao();
-            List<Usuario> actores = dao.listarActores();
-            for (Usuario u : actores) {
+            for (Usuario u : new Usuario_Dao().listarActores())
                 cbActores.addItem(u.getNombre());
-            }
         } catch (Exception e) {
-            System.out.println("Error cargando actores: " + e.getMessage());
+            System.out.println("Error actores: " + e.getMessage());
         }
+    }
+
+    private void limpiar() {
+        txtTitulo.setText("");
+        txtDuracion.setText("");
+        txtPrecio.setText("");
+        txtIdioma.setText("");
+        txtEdad.setText("");
     }
 }
