@@ -73,7 +73,7 @@ public class Carrito extends JFrame {
                         "El carrito está vacío.");
                 return;
             }
-            carritoDao.vaciarCarrito(usuario.getId());
+         // carritoDao.vaciarCarrito(usuario.getId());
             cargarCarrito();
             JOptionPane.showMessageDialog(null,
                     "Compra realizada. Gracias por su compra.");

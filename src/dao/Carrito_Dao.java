@@ -31,4 +31,10 @@ public class Carrito_Dao {
     public void vaciarCarrito(int idUsuario) {
         carritoPorUsuario.remove(idUsuario);
     }
+    public Map<Integer, Map<Integer, Integer>>
+    obtenerTodosLosCarritos(){
+
+        return carritoPorUsuario;
+
+    } 
 }

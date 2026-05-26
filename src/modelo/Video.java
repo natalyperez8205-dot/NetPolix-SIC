@@ -6,14 +6,14 @@ public class Video {
     private String categoria;
     private String actores;
     private int duracion;
-    private String edadRestriccion;
+    private int edadRestriccion;
     private String idioma;
     private double precio;
 
     public Video() {}
 
     public Video(int id, String tituloOriginal, String categoria,
-                 String actores, int duracion, String edadRestriccion,
+                 String actores, int duracion, int edadRestriccion,
                  String idioma, double precio) {
         this.id = id;
         this.tituloOriginal = tituloOriginal;
@@ -37,8 +37,8 @@ public class Video {
     public void setActores(String actores) { this.actores = actores; }
     public int getDuracion() { return duracion; }
     public void setDuracion(int duracion) { this.duracion = duracion; }
-    public String getEdadRestriccion() { return edadRestriccion; }
-    public void setEdadRestriccion(String edadRestriccion) { this.edadRestriccion = edadRestriccion; }
+    public int getEdadRestriccion() { return edadRestriccion; }
+    public void setEdadRestriccion(int i) { this.edadRestriccion = i; }
     public String getIdioma() { return idioma; }
     public void setIdioma(String idioma) { this.idioma = idioma; }
     public double getPrecio() { return precio; }

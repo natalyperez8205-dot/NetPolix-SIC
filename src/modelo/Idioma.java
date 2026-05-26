@@ -1,19 +1,40 @@
 package modelo;
 
 public class Idioma {
+
     private int id;
-    private String lenguaje;
 
-    public Idioma() {}
+    private String nombre;
 
-    public Idioma(int id, String lenguaje) {
-        this.id = id;
-        this.lenguaje = lenguaje;
+    public Idioma() {
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getLenguaje() { return lenguaje; }
-    public void setLenguaje(String lenguaje) { 
-        this.lenguaje = lenguaje; }
+    public Idioma(int id, String nombre) {
+
+        this.id = id;
+
+        this.nombre = nombre;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+
+        return id + " - " + nombre;
+    }
 }
