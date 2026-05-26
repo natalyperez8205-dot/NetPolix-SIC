@@ -1,7 +1,7 @@
 package vista;
 
+import conexion.ConexionBD;
 import dao.Calificacion_Dao;
-import dao.Carrito_Dao;
 import dao.Usuario_Dao;
 import dao.Video_Dao;
 import modelo.Calificacion;
@@ -9,8 +9,10 @@ import modelo.Usuario;
 import modelo.Video;
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
-import java.util.Map;
 
 public class Menu_Gerente extends JFrame {
 
@@ -56,11 +58,11 @@ public class Menu_Gerente extends JFrame {
         add(lblMenu);
 
         // BOTONES
-        JButton btnUsuarios       = crearBoton("👥  Reporte de Usuarios",       30, 148);
-        JButton btnVideos         = crearBoton("🎬  Reporte de Videos",          30, 206);
-        JButton btnCalificaciones = crearBoton("⭐  Reporte de Calificaciones",  30, 264);
-        JButton btnVentas         = crearBoton("💰  Reporte de Ventas",          30, 322);
-        JButton btnSalir          = crearBotonSec("⏻  Cerrar Sesión",            30, 450);
+        JButton btnUsuarios       = crearBoton("👥  Reporte de Usuarios",      30, 148);
+        JButton btnVideos         = crearBoton("🎬  Reporte de Videos",         30, 206);
+        JButton btnCalificaciones = crearBoton("⭐  Reporte de Calificaciones", 30, 264);
+        JButton btnVentas         = crearBoton("💰  Reporte de Ventas",         30, 322);
+        JButton btnSalir          = crearBotonSec("⏻  Cerrar Sesión",           30, 450);
 
         add(btnUsuarios);
         add(btnVideos);
@@ -68,7 +70,7 @@ public class Menu_Gerente extends JFrame {
         add(btnVentas);
         add(btnSalir);
 
-        // EVENTO USUARIOS
+        // REPORTE USUARIOS
         btnUsuarios.addActionListener(e -> {
             List<Usuario> lista = new Usuario_Dao().listarUsuarios();
             StringBuilder sb = new StringBuilder();
@@ -82,22 +84,26 @@ public class Menu_Gerente extends JFrame {
             mostrarReporte("Reporte de Usuarios", sb.toString());
         });
 
-        // EVENTO VIDEOS
+        // REPORTE VIDEOS
         btnVideos.addActionListener(e -> {
             List<Video> lista = new Video_Dao().listarVideos();
             StringBuilder sb = new StringBuilder();
             for (Video v : lista) {
                 sb.append("► ").append(v.getTituloOriginal())
-                  .append("  |  ").append(v.getCategoria())
-                  .append("  |  $").append(
-                          String.format("%.2f", v.getPrecio())).append("\n");
+                  .append("  |  ").append(
+                        v.getCategoria() == null
+                        || v.getCategoria().isEmpty()
+                        ? "(Sin categoría)" : v.getCategoria())
+                  .append("  |  $")
+                  .append(String.format("%.2f", v.getPrecio()))
+                  .append("\n");
             }
             sb.append("\nTotal: ").append(lista.size())
               .append(" videos en catálogo.");
             mostrarReporte("Reporte de Videos", sb.toString());
         });
 
-        // EVENTO CALIFICACIONES
+        // REPORTE CALIFICACIONES
         btnCalificaciones.addActionListener(e -> {
             List<Video> lista = new Video_Dao().listarVideos();
             Calificacion_Dao calDao = new Calificacion_Dao();
@@ -106,75 +112,121 @@ public class Menu_Gerente extends JFrame {
                 Calificacion c = calDao.obtenerPorVideo(v.getId());
                 sb.append("► ").append(v.getTituloOriginal()).append("\n");
                 if (c != null) {
+                    int total = c.getExcelente() + c.getBuena()
+                              + c.getRegular() + c.getMala();
                     sb.append("   Promedio: ")
                       .append(String.format("%.2f", c.calcularPromedio()))
                       .append("/4")
-                      .append("  |  Excelente: ").append(c.getExcelente())
-                      .append("  Buena: ").append(c.getBuena())
-                      .append("  Regular: ").append(c.getRegular())
-                      .append("  Mala: ").append(c.getMala())
+                      .append("  |  Total votos: ").append(total)
+                      .append("\n")
+                      .append("   😍 Excelente: ").append(c.getExcelente())
+                      .append("  🙂 Buena: ").append(c.getBuena())
+                      .append("  😐 Regular: ").append(c.getRegular())
+                      .append("  😤 Mala: ").append(c.getMala())
                       .append("\n");
                 } else {
                     sb.append("   Sin calificaciones aún.\n");
                 }
             }
-            mostrarReporte("Reporte de Calificaciones", sb.toString());
+            if (lista.isEmpty()) {
+                mostrarReporte("Reporte de Calificaciones",
+                        "No hay videos en el catálogo.");
+            } else {
+                mostrarReporte("Reporte de Calificaciones", sb.toString());
+            }
         });
 
-        // EVENTO VENTAS
+        // REPORTE VENTAS
         btnVentas.addActionListener(e -> {
-            Usuario_Dao uDao = new Usuario_Dao();
-            Video_Dao vDao   = new Video_Dao();
-            Carrito_Dao cDao = new Carrito_Dao();
-
-            Map<Integer, Map<Integer, Integer>> carritos =
-                    cDao.obtenerTodosLosCarritos();
-
-            if (carritos.isEmpty()) {
-                mostrarReporte("Reporte de Ventas",
-                        "No hay ventas registradas aún.");
-                return;
-            }
-
-            StringBuilder sb = new StringBuilder();
-            double totalGeneral = 0;
-
-            for (Integer idUsuario : carritos.keySet()) {
-                Usuario u = uDao.buscarUsuarioPorId(idUsuario);
-                sb.append("┌────────────────────────────────────────┐\n");
-                sb.append("│ 👤 ").append(
-                        u != null ? u.getNombre() : "Usuario " + idUsuario)
-                  .append("\n│\n");
-
-                Map<Integer, Integer> items = carritos.get(idUsuario);
-                double totalUsuario = 0;
-
-                for (Map.Entry<Integer, Integer> entry : items.entrySet()) {
-                    Video v = vDao.buscarPorId(entry.getKey());
-                    if (v != null) {
-                        double sub = v.getPrecio() * entry.getValue();
-                        totalUsuario += sub;
-                        sb.append("│ 🎬 ").append(v.getTituloOriginal())
-                          .append("\n│     x").append(entry.getValue())
-                          .append("  →  $")
-                          .append(String.format("%.2f", sub)).append("\n");
-                    }
+            Connection con = null;
+            try {
+                con = ConexionBD.getConexion();
+                if (con == null) {
+                    JOptionPane.showMessageDialog(null, "Sin conexión.");
+                    return;
                 }
 
-                sb.append("│\n│ Subtotal: $")
-                  .append(String.format("%.2f", totalUsuario)).append("\n");
-                sb.append("└────────────────────────────────────────┘\n\n");
-                totalGeneral += totalUsuario;
+                PreparedStatement ps = con.prepareStatement(
+                    "SELECT c.id, u.nombre, u.correo, " +
+                    "c.fecha, c.total, c.puntos_ganados " +
+                    "FROM compra c " +
+                    "JOIN usuario u ON c.id_usuario = u.id " +
+                    "ORDER BY c.fecha DESC");
+
+                ResultSet rs = ps.executeQuery();
+                StringBuilder sb = new StringBuilder();
+                double totalGeneral = 0;
+                int totalCompras = 0;
+
+                while (rs.next()) {
+                    totalCompras++;
+                    double total = rs.getDouble("total");
+                    totalGeneral += total;
+
+                    sb.append("┌──────────────────────────────────────┐\n");
+                    sb.append("│ 👤 ").append(
+                            rs.getString("nombre")).append("\n");
+                    sb.append("│ ✉  ").append(
+                            rs.getString("correo")).append("\n");
+                    sb.append("│ 📅 ").append(
+                            rs.getString("fecha")).append("\n");
+                    sb.append("│ 💰 Total: $")
+                      .append(String.format("%.2f", total)).append("\n");
+                    sb.append("│ ⭐ Puntos ganados: ")
+                      .append(rs.getInt("puntos_ganados")).append("\n");
+
+                    // Detalle de la compra
+                    int idCompra = rs.getInt("id");
+                    PreparedStatement psD = con.prepareStatement(
+                        "SELECT v.tituloOriginal, d.cantidad, d.subtotal " +
+                        "FROM detalle_compra d " +
+                        "JOIN video v ON d.id_video = v.id " +
+                        "WHERE d.id_compra = ?");
+                    psD.setInt(1, idCompra);
+                    ResultSet rsD = psD.executeQuery();
+                    while (rsD.next()) {
+                        sb.append("│   🎬 ")
+                          .append(rsD.getString("tituloOriginal"))
+                          .append(" x").append(rsD.getInt("cantidad"))
+                          .append(" = $")
+                          .append(String.format("%.2f",
+                                  rsD.getDouble("subtotal")))
+                          .append("\n");
+                    }
+                    rsD.close();
+                    psD.close();
+
+                    sb.append("└──────────────────────────────────────┘\n\n");
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+
+                sb.append("══════════════════════════════════════\n");
+                sb.append("📊 Total compras: ")
+                  .append(totalCompras).append("\n");
+                sb.append("💰 TOTAL GENERAL: $")
+                  .append(String.format("%.2f", totalGeneral));
+
+                if (totalCompras == 0) {
+                    mostrarReporte("Reporte de Ventas",
+                            "No hay ventas registradas aún.");
+                } else {
+                    mostrarReporte("Reporte de Ventas", sb.toString());
+                }
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null,
+                        "Error al generar reporte: " + ex.getMessage());
+            } finally {
+                try {
+                    if (con != null) con.close();
+                } catch (Exception ex) {}
             }
-
-            sb.append("══════════════════════════════════════\n");
-            sb.append("💰 TOTAL GENERAL: $")
-              .append(String.format("%.2f", totalGeneral));
-
-            mostrarReporte("Reporte de Ventas", sb.toString());
         });
 
-        // EVENTO CERRAR SESIÓN
+        // CERRAR SESIÓN
         btnSalir.addActionListener(e -> {
             new Login().setVisible(true);
             dispose();

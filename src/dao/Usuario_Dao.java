@@ -306,4 +306,59 @@ try { if (con != null) con.close(); } catch (Exception ex) {}
         try { if (con != null) con.close(); } catch (Exception ex) {}
     }
 }
+public int registrarCompra(int idUsuario, double total,
+        int puntosGanados) {
+Connection con = null;
+try {
+con = ConexionBD.getConexion();
+if (con == null) return -1;
+
+PreparedStatement ps = con.prepareStatement(
+"INSERT INTO compra (id_usuario, fecha, total, puntos_ganados) "
++ "VALUES (?, CURDATE(), ?, ?)",
+PreparedStatement.RETURN_GENERATED_KEYS);
+ps.setInt(1, idUsuario);
+ps.setDouble(2, total);
+ps.setInt(3, puntosGanados);
+ps.executeUpdate();
+
+ResultSet rs = ps.getGeneratedKeys();
+int idCompra = -1;
+if (rs.next()) idCompra = rs.getInt(1);
+rs.close();
+ps.close();
+return idCompra;
+
+} catch (Exception e) {
+System.out.println("Error registrar compra: " + e.getMessage());
+} finally {
+try { if (con != null) con.close(); } catch (Exception ex) {}
+}
+return -1;
+}
+
+public void registrarDetalleCompra(int idCompra, int idVideo,
+                int cantidad, double subtotal) {
+Connection con = null;
+try {
+con = ConexionBD.getConexion();
+if (con == null) return;
+
+PreparedStatement ps = con.prepareStatement(
+"INSERT INTO detalle_compra "
++ "(id_compra, id_video, cantidad, subtotal) "
++ "VALUES (?, ?, ?, ?)");
+ps.setInt(1, idCompra);
+ps.setInt(2, idVideo);
+ps.setInt(3, cantidad);
+ps.setDouble(4, subtotal);
+ps.executeUpdate();
+ps.close();
+
+} catch (Exception e) {
+System.out.println("Error detalle compra: " + e.getMessage());
+} finally {
+try { if (con != null) con.close(); } catch (Exception ex) {}
+}
+}
 }
