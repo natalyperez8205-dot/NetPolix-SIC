@@ -2,178 +2,137 @@ package vista;
 
 import dao.Idioma_Dao;
 import modelo.Idioma;
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
 public class GestionarIdioma extends JFrame {
 
     JTextField txtIdioma;
+    JTable tabla;
+    DefaultTableModel modelo;
 
-    JButton btnGuardar;
-    JButton btnEliminar;
-    JButton btnVolver;
+    public GestionarIdioma() {
 
-    JTextArea areaIdiomas;
-
-    private final Idioma_Dao dao =
-            new Idioma_Dao();
-
-    public GestionarIdioma(){
-
-        setTitle("Gestionar Idiomas");
-
-        setSize(500,500);
-
+        setTitle("NetPOLIx — Idiomas");
+        setSize(580, 520);
         setLayout(null);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        setDefaultCloseOperation(
-                JFrame.DISPOSE_ON_CLOSE);
+        Idioma_Dao dao = new Idioma_Dao();
 
-        JLabel lblTitulo =
-                new JLabel(
-                        "GESTIÓN IDIOMAS");
+        // HEADER
+        JPanel header = new JPanel(null);
+        header.setBounds(0, 0, 580, 65);
+        header.setBackground(Estilos.PANEL);
 
-        lblTitulo.setBounds(
-                150,20,200,30);
+        JLabel lblNet = new JLabel("NET");
+        lblNet.setBounds(20, 10, 100, 45);
+        lblNet.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblNet.setForeground(Estilos.ACENTO);
+        header.add(lblNet);
 
-        add(lblTitulo);
+        JLabel lblPolix = new JLabel("POLIx");
+        lblPolix.setBounds(93, 10, 140, 45);
+        lblPolix.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblPolix.setForeground(Estilos.TEXTO);
+        header.add(lblPolix);
 
-        JLabel lblIdioma =
-                new JLabel(
-                        "Idioma:");
+        JLabel lblSub = new JLabel("🌐  Gestión de idiomas");
+        lblSub.setBounds(270, 22, 280, 22);
+        lblSub.setFont(Estilos.FUENTE_SUBTIT);
+        lblSub.setForeground(Estilos.TEXTO_GRIS);
+        header.add(lblSub);
+        add(header);
 
-        lblIdioma.setBounds(
-                40,70,100,25);
+        // CAMPO
+        JLabel lblNombre = new JLabel("Nombre del idioma:");
+        lblNombre.setBounds(20, 82, 180, 18);
+        lblNombre.setFont(Estilos.FUENTE_SUBTIT);
+        lblNombre.setForeground(Estilos.TEXTO_GRIS);
+        add(lblNombre);
 
-        add(lblIdioma);
-
-        txtIdioma =
-                new JTextField();
-
-        txtIdioma.setBounds(
-                120,70,220,25);
-
+        txtIdioma = new JTextField();
+        txtIdioma.setBounds(20, 103, 320, 36);
+        Estilos.campo(txtIdioma);
         add(txtIdioma);
 
-        btnGuardar =
-                new JButton(
-                        "Guardar");
-
-        btnGuardar.setBounds(
-                350,70,100,25);
-
+        JButton btnGuardar = new JButton("➕ Agregar");
+        btnGuardar.setBounds(355, 103, 190, 36);
+        Estilos.botonPrincipal(btnGuardar);
         add(btnGuardar);
 
-        areaIdiomas =
-                new JTextArea();
+        // TABLA
+        modelo = new DefaultTableModel() {
+            public boolean isCellEditable(int r, int c) { return false; }
+        };
+        modelo.addColumn("ID");
+        modelo.addColumn("Idioma");
 
-        areaIdiomas.setEditable(false);
+        tabla = new JTable(modelo);
+        Estilos.tabla(tabla);
 
-        JScrollPane scroll =
-                new JScrollPane(areaIdiomas);
-
-        scroll.setBounds(
-                40,120,400,220);
-
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setBounds(20, 155, 525, 270);
+        Estilos.scroll(scroll);
         add(scroll);
 
-        btnEliminar =
-                new JButton(
-                        "Eliminar");
-
-        btnEliminar.setBounds(
-                90,380,120,35);
-
+        // BOTONES
+        JButton btnEliminar = new JButton("🗑 Eliminar");
+        btnEliminar.setBounds(20, 440, 160, 40);
+        Estilos.botonPrincipal(btnEliminar);
+        btnEliminar.setBackground(new Color(150, 20, 20));
         add(btnEliminar);
 
-        btnVolver =
-                new JButton(
-                        "Volver");
-
-        btnVolver.setBounds(
-                250,380,120,35);
-
+        JButton btnVolver = new JButton("← Volver");
+        btnVolver.setBounds(390, 440, 155, 40);
+        Estilos.botonSecundario(btnVolver);
         add(btnVolver);
 
+        // EVENTOS
         btnGuardar.addActionListener(e -> {
-
-            if(txtIdioma.getText()
-                    .trim()
-                    .isEmpty()){
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Ingrese un idioma");
-
+            String nombre = txtIdioma.getText().trim();
+            if (nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Ingresa un idioma.");
                 return;
             }
-
-            Idioma idioma =
-                    new Idioma();
-
-            idioma.setNombre(
-                    txtIdioma.getText());
-
+            Idioma idioma = new Idioma();
+            idioma.setNombre(nombre);
             dao.guardarIdioma(idioma);
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Idioma guardado");
-
+            JOptionPane.showMessageDialog(null, "✅ Idioma guardado.");
             txtIdioma.setText("");
-
-            mostrarIdiomas();
-
+            cargar(dao);
         });
 
         btnEliminar.addActionListener(e -> {
-
-            String idTexto =
-                    JOptionPane.showInputDialog(
-                            "Ingrese ID idioma");
-
-            try{
-
-                int id =
-                        Integer.parseInt(idTexto);
-
-                dao.eliminarIdioma(id);
-
-                mostrarIdiomas();
-
-            } catch(Exception ex){
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "ID inválido");
+            int fila = tabla.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(null, "Selecciona un idioma.");
+                return;
             }
-
+            int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+            String nombre = modelo.getValueAt(fila, 1).toString();
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "¿Eliminar el idioma \"" + nombre + "\"?");
+            if (confirm == JOptionPane.YES_OPTION) {
+                dao.eliminarIdioma(id);
+                JOptionPane.showMessageDialog(null, "Idioma eliminado.");
+                cargar(dao);
+            }
         });
 
-        btnVolver.addActionListener(
-                e -> dispose());
+        btnVolver.addActionListener(e -> dispose());
 
-        mostrarIdiomas();
+        cargar(dao);
+        setLocationRelativeTo(null);
     }
 
-    public void mostrarIdiomas(){
-
-        List<Idioma> lista =
-                dao.listarIdiomas();
-
-        String texto = "";
-
-        for(Idioma idioma : lista){
-
-            texto +=
-                    idioma.getId()
-                    + " - "
-                    + idioma.getNombre()
-                    + "\n";
-        }
-
-        areaIdiomas.setText(texto);
+    private void cargar(Idioma_Dao dao) {
+        modelo.setRowCount(0);
+        for (Idioma i : dao.listarIdiomas())
+            modelo.addRow(new Object[]{i.getId(), i.getNombre()});
     }
 }

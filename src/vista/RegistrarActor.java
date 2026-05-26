@@ -2,70 +2,114 @@ package vista;
 
 import dao.Usuario_Dao;
 import modelo.Usuario;
-
 import javax.swing.*;
+import java.awt.*;
 import java.time.LocalDate;
 
 public class RegistrarActor extends JFrame {
 
-    JLabel lblNombre;
-    JLabel lblCedula;
-
     JTextField txtNombre;
     JTextField txtCedula;
 
-    JButton btnRegistrar;
-    JButton btnVolver;
-
     public RegistrarActor() {
-        setTitle("Registrar Actor");
-        setSize(420, 260);
-        setLayout(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        lblNombre = new JLabel("Nombre:");
-        lblNombre.setBounds(30, 30, 100, 25);
+        setTitle("NetPOLIx — Registrar Actor");
+        setSize(440, 380);
+        setLayout(null);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
+
+        // HEADER
+        JPanel header = new JPanel(null);
+        header.setBounds(0, 0, 440, 65);
+        header.setBackground(Estilos.PANEL);
+
+        JLabel lblNet = new JLabel("NET");
+        lblNet.setBounds(20, 10, 100, 45);
+        lblNet.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblNet.setForeground(Estilos.ACENTO);
+        header.add(lblNet);
+
+        JLabel lblPolix = new JLabel("POLIx");
+        lblPolix.setBounds(93, 10, 140, 45);
+        lblPolix.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblPolix.setForeground(Estilos.TEXTO);
+        header.add(lblPolix);
+
+        JLabel lblSub = new JLabel("🎭  Nuevo actor");
+        lblSub.setBounds(255, 25, 170, 20);
+        lblSub.setFont(Estilos.FUENTE_SUBTIT);
+        lblSub.setForeground(Estilos.TEXTO_GRIS);
+        header.add(lblSub);
+        add(header);
+
+        // NOMBRE
+        JLabel lblNombre = new JLabel("Nombre completo:");
+        lblNombre.setBounds(30, 90, 200, 18);
+        lblNombre.setFont(Estilos.FUENTE_SUBTIT);
+        lblNombre.setForeground(Estilos.TEXTO_GRIS);
         add(lblNombre);
 
         txtNombre = new JTextField();
-        txtNombre.setBounds(140, 30, 220, 25);
+        txtNombre.setBounds(30, 112, 370, 38);
+        Estilos.campo(txtNombre);
         add(txtNombre);
 
-        lblCedula = new JLabel("Cédula:");
-        lblCedula.setBounds(30, 70, 100, 25);
+        // CÉDULA
+        JLabel lblCedula = new JLabel("Cédula / Identificación:");
+        lblCedula.setBounds(30, 165, 220, 18);
+        lblCedula.setFont(Estilos.FUENTE_SUBTIT);
+        lblCedula.setForeground(Estilos.TEXTO_GRIS);
         add(lblCedula);
 
         txtCedula = new JTextField();
-        txtCedula.setBounds(140, 70, 220, 25);
+        txtCedula.setBounds(30, 187, 370, 38);
+        Estilos.campo(txtCedula);
         add(txtCedula);
 
-        btnRegistrar = new JButton("Registrar Actor");
-        btnRegistrar.setBounds(140, 130, 150, 30);
-        add(btnRegistrar);
+        // BOTONES
+        JButton btnGuardar = new JButton("✅  REGISTRAR ACTOR");
+        btnGuardar.setBounds(30, 255, 370, 44);
+        Estilos.botonPrincipal(btnGuardar);
+        btnGuardar.setFont(new Font("SansSerif", Font.BOLD, 14));
+        add(btnGuardar);
 
-        btnVolver = new JButton("Volver");
-        btnVolver.setBounds(300, 130, 100, 30);
+        JButton btnVolver = new JButton("← Cancelar");
+        btnVolver.setBounds(30, 310, 370, 38);
+        Estilos.botonSecundario(btnVolver);
         add(btnVolver);
 
-        btnRegistrar.addActionListener(e -> {
-            Usuario usuario = new Usuario();
-            usuario.setNombre(txtNombre.getText());
-            usuario.setCedula(txtCedula.getText());
-            usuario.setCorreo(txtCedula.getText() + "@actor.netpolix");
-            usuario.setContrasena("actor");
-            usuario.setRol("ACTOR");
-            usuario.setFechaIngreso(LocalDate.now().toString());
-            usuario.setPuntos(0);
-            usuario.setSaldo(0);
-            usuario.setIdReferido(0);
+        btnGuardar.addActionListener(e -> {
+            if (txtNombre.getText().trim().isEmpty()
+                    || txtCedula.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        "Completa todos los campos.",
+                        "Campos incompletos",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            Usuario actor = new Usuario();
+            actor.setNombre(txtNombre.getText().trim());
+            actor.setCedula(txtCedula.getText().trim());
+            actor.setCorreo(txtCedula.getText().trim() + "@actor.netpolix");
+            actor.setContrasena("actor");
+            actor.setRol("ACTOR");
+            actor.setFechaIngreso(LocalDate.now().toString());
+            actor.setPuntos(0);
+            actor.setSaldo(0);
+            actor.setIdReferido(0);
 
-            Usuario_Dao dao = new Usuario_Dao();
-            dao.guardarUsuario(usuario);
+            new Usuario_Dao().guardarUsuario(actor);
 
-            JOptionPane.showMessageDialog(null, "Actor registrado correctamente");
+            JOptionPane.showMessageDialog(null,
+                    "✅ Actor \"" + actor.getNombre() + "\" registrado.",
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         });
 
         btnVolver.addActionListener(e -> dispose());
+
+        setLocationRelativeTo(null);
     }
 }

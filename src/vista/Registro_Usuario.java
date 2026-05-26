@@ -1,103 +1,145 @@
 package vista;
-import javax.swing.*;
-import java.time.LocalDate;
+
 import dao.Usuario_Dao;
 import modelo.Usuario;
-import vista.Login;
+import javax.swing.*;
+import java.awt.*;
+import java.time.LocalDate;
 
 public class Registro_Usuario extends JFrame {
-
-    JLabel lblNombre;
-    JLabel lblCedula;
-    JLabel lblCorreo;
-    JLabel lblContrasena;
 
     JTextField txtNombre;
     JTextField txtCedula;
     JTextField txtCorreo;
-
     JPasswordField txtContrasena;
-
     JButton btnRegistrar;
     JButton btnVolver;
 
     public Registro_Usuario() {
 
-        setTitle("Registro Usuario");
-        setSize(420, 380);
+        setTitle("NetPOLIx — Registro");
+        setSize(480, 580);
         setLayout(null);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        lblNombre = new JLabel("Nombre:");
-        lblNombre.setBounds(30, 30, 100, 25);
+        JLabel lblLogo = new JLabel("NET");
+        lblLogo.setBounds(90, 30, 200, 50);
+        lblLogo.setFont(new Font("SansSerif", Font.BOLD, 42));
+        lblLogo.setForeground(Estilos.ACENTO);
+        add(lblLogo);
+
+        JLabel lblLogo2 = new JLabel("POLIx");
+        lblLogo2.setBounds(200, 30, 200, 50);
+        lblLogo2.setFont(new Font("SansSerif", Font.BOLD, 42));
+        lblLogo2.setForeground(Estilos.TEXTO);
+        add(lblLogo2);
+
+        JLabel lblTitulo = new JLabel("Crear cuenta");
+        lblTitulo.setBounds(60, 88, 300, 28);
+        lblTitulo.setFont(Estilos.FUENTE_TITULO);
+        lblTitulo.setForeground(Estilos.TEXTO);
+        add(lblTitulo);
+
+        // NOMBRE
+        JLabel lblNombre = new JLabel("Nombre completo");
+        lblNombre.setBounds(60, 130, 200, 18);
+        lblNombre.setFont(Estilos.FUENTE_SUBTIT);
+        lblNombre.setForeground(Estilos.TEXTO_GRIS);
         add(lblNombre);
 
         txtNombre = new JTextField();
-        txtNombre.setBounds(140, 30, 220, 25);
+        txtNombre.setBounds(60, 150, 350, 36);
+        Estilos.campo(txtNombre);
         add(txtNombre);
 
-        lblCedula = new JLabel("Cédula:");
-        lblCedula.setBounds(30, 70, 100, 25);
+        // CEDULA
+        JLabel lblCedula = new JLabel("Cédula");
+        lblCedula.setBounds(60, 198, 200, 18);
+        lblCedula.setFont(Estilos.FUENTE_SUBTIT);
+        lblCedula.setForeground(Estilos.TEXTO_GRIS);
         add(lblCedula);
 
         txtCedula = new JTextField();
-        txtCedula.setBounds(140, 70, 220, 25);
+        txtCedula.setBounds(60, 218, 350, 36);
+        Estilos.campo(txtCedula);
         add(txtCedula);
 
-        lblCorreo = new JLabel("Correo:");
-        lblCorreo.setBounds(30, 110, 100, 25);
+        // CORREO
+        JLabel lblCorreo = new JLabel("Correo electrónico");
+        lblCorreo.setBounds(60, 266, 200, 18);
+        lblCorreo.setFont(Estilos.FUENTE_SUBTIT);
+        lblCorreo.setForeground(Estilos.TEXTO_GRIS);
         add(lblCorreo);
 
         txtCorreo = new JTextField();
-        txtCorreo.setBounds(140, 110, 220, 25);
+        txtCorreo.setBounds(60, 286, 350, 36);
+        Estilos.campo(txtCorreo);
         add(txtCorreo);
 
-        lblContrasena = new JLabel("Contraseña:");
-        lblContrasena.setBounds(30, 150, 100, 25);
-        add(lblContrasena);
+        // CONTRASEÑA
+        JLabel lblPass = new JLabel("Contraseña");
+        lblPass.setBounds(60, 334, 200, 18);
+        lblPass.setFont(Estilos.FUENTE_SUBTIT);
+        lblPass.setForeground(Estilos.TEXTO_GRIS);
+        add(lblPass);
 
         txtContrasena = new JPasswordField();
-        txtContrasena.setBounds(140, 150, 220, 25);
+        txtContrasena.setBounds(60, 354, 350, 36);
+        Estilos.campo(txtContrasena);
         add(txtContrasena);
 
-        btnRegistrar = new JButton("Registrar");
-        btnRegistrar.setBounds(140, 210, 120, 30);
+        // BOTONES
+        btnRegistrar = new JButton("CREAR CUENTA");
+        btnRegistrar.setBounds(60, 415, 350, 42);
+        Estilos.botonPrincipal(btnRegistrar);
+        btnRegistrar.setFont(new Font("SansSerif", Font.BOLD, 15));
         add(btnRegistrar);
 
-        btnVolver = new JButton("Volver");
-        btnVolver.setBounds(280, 210, 100, 30);
+        btnVolver = new JButton("¿Ya tienes cuenta? Inicia sesión");
+        btnVolver.setBounds(60, 470, 350, 36);
+        Estilos.botonSecundario(btnVolver);
         add(btnVolver);
 
         btnRegistrar.addActionListener(e -> {
+            if (txtNombre.getText().trim().isEmpty()
+                    || txtCedula.getText().trim().isEmpty()
+                    || txtCorreo.getText().trim().isEmpty()
+                    || txtContrasena.getPassword().length == 0) {
+                JOptionPane.showMessageDialog(null,
+                        "Completa todos los campos.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             Usuario usuario = new Usuario();
-
-            usuario.setNombre(txtNombre.getText());
-            usuario.setCedula(txtCedula.getText());
-            usuario.setCorreo(txtCorreo.getText());
+            usuario.setNombre(txtNombre.getText().trim());
+            usuario.setCedula(txtCedula.getText().trim());
+            usuario.setCorreo(txtCorreo.getText().trim());
             usuario.setContrasena(new String(txtContrasena.getPassword()));
-
             usuario.setRol("CLIENTE");
             usuario.setFechaIngreso(LocalDate.now().toString());
             usuario.setPuntos(0);
             usuario.setSaldo(0);
             usuario.setIdReferido(0);
 
-            Usuario_Dao dao = new Usuario_Dao();
-            dao.guardarUsuario(usuario);
+            new Usuario_Dao().guardarUsuario(usuario);
 
             JOptionPane.showMessageDialog(null,
-                    "Usuario registrado correctamente");
+                    "¡Cuenta creada exitosamente!",
+                    "Registro exitoso",
+                    JOptionPane.INFORMATION_MESSAGE);
 
-            Login login = new Login();
-            login.setVisible(true);
+            new Login().setVisible(true);
             dispose();
         });
 
         btnVolver.addActionListener(e -> {
-            Login login = new Login();
-            login.setVisible(true);
+            new Login().setVisible(true);
             dispose();
         });
+
+        setLocationRelativeTo(null);
     }
 }

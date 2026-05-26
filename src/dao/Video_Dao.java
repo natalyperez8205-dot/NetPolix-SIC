@@ -15,30 +15,31 @@ public class Video_Dao {
     // GUARDAR VIDEO
     // -------------------------------------------------------
     public void guardarVideo(Video video) {
+        Connection con = null;
         try {
-            Connection con = ConexionBD.getConexion();
+            con = ConexionBD.getConexion();
             if (con == null) {
                 System.out.println("Sin conexión a BD");
                 return;
             }
 
-            String sql = "INSERT INTO video (isan, tituloOriginal, anio, duracion, categoria, precio) "
-                       + "VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO video (isan, tituloOriginal, anio, " +
+                         "duracion, categoria, precio, actores) " +
+                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement ps = con.prepareStatement(
                     sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
-            // ISAN único basado en timestamp
             String isan = "ISAN" + System.currentTimeMillis();
             ps.setString(1, isan);
             ps.setString(2, video.getTituloOriginal());
-
             int anio = java.util.Calendar.getInstance()
                            .get(java.util.Calendar.YEAR);
             ps.setInt(3, anio);
             ps.setInt(4, video.getDuracion());
             ps.setString(5, video.getCategoria());
             ps.setDouble(6, video.getPrecio());
+            ps.setString(7, video.getActores());
 
             ps.executeUpdate();
 
@@ -49,7 +50,6 @@ public class Video_Dao {
 
             rs.close();
             ps.close();
-            con.close();
 
             System.out.println("Video guardado en BD: "
                     + video.getTituloOriginal());
@@ -57,6 +57,8 @@ public class Video_Dao {
         } catch (Exception e) {
             System.out.println("Error al guardar video: "
                     + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
     }
 
@@ -70,8 +72,8 @@ public class Video_Dao {
             con = ConexionBD.getConexion();
             if (con == null) return resultado;
 
-            String sql = "SELECT id, tituloOriginal, duracion, "
-                       + "categoria, precio FROM video";
+            String sql = "SELECT id, tituloOriginal, duracion, " +
+                         "categoria, precio, actores FROM video";
 
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -83,6 +85,7 @@ public class Video_Dao {
                 v.setDuracion(rs.getInt("duracion"));
                 v.setCategoria(rs.getString("categoria"));
                 v.setPrecio(rs.getDouble("precio"));
+                v.setActores(rs.getString("actores"));
                 resultado.add(v);
             }
 
@@ -93,13 +96,13 @@ public class Video_Dao {
             System.out.println("Error al listar videos: "
                     + e.getMessage());
         } finally {
-            try { if (con != null) con.close(); } catch (Exception ex) { }
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
         return resultado;
     }
 
     // -------------------------------------------------------
-    // BUSCAR POR ID — ahora consulta la BD correctamente
+    // BUSCAR POR ID
     // -------------------------------------------------------
     public Video buscarPorId(int id) {
         Connection con = null;
@@ -107,8 +110,8 @@ public class Video_Dao {
             con = ConexionBD.getConexion();
             if (con == null) return null;
 
-            String sql = "SELECT id, tituloOriginal, duracion, "
-                       + "categoria, precio FROM video WHERE id = ?";
+            String sql = "SELECT id, tituloOriginal, duracion, " +
+                         "categoria, precio, actores FROM video WHERE id = ?";
 
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, id);
@@ -122,6 +125,7 @@ public class Video_Dao {
                 v.setDuracion(rs.getInt("duracion"));
                 v.setCategoria(rs.getString("categoria"));
                 v.setPrecio(rs.getDouble("precio"));
+                v.setActores(rs.getString("actores"));
                 rs.close();
                 ps.close();
                 return v;
@@ -134,9 +138,41 @@ public class Video_Dao {
             System.out.println("Error al buscar video: "
                     + e.getMessage());
         } finally {
-            try { if (con != null) con.close(); } catch (Exception ex) { }
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
         return null;
+    }
+
+    // -------------------------------------------------------
+    // EDITAR VIDEO
+    // -------------------------------------------------------
+    public void editarVideo(int id, String titulo, String categoria,
+                             String actores, int duracion, double precio) {
+        Connection con = null;
+        try {
+            con = ConexionBD.getConexion();
+            if (con == null) return;
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE video SET tituloOriginal = ?, categoria = ?, " +
+                "actores = ?, duracion = ?, precio = ? WHERE id = ?");
+            ps.setString(1, titulo);
+            ps.setString(2, categoria);
+            ps.setString(3, actores);
+            ps.setInt(4, duracion);
+            ps.setDouble(5, precio);
+            ps.setInt(6, id);
+            ps.executeUpdate();
+            ps.close();
+
+            System.out.println("Video editado: " + titulo);
+
+        } catch (Exception e) {
+            System.out.println("Error al editar video: "
+                    + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (Exception ex) {}
+        }
     }
 
     // -------------------------------------------------------
@@ -148,18 +184,19 @@ public class Video_Dao {
             con = ConexionBD.getConexion();
             if (con == null) return;
 
-            String sql = "DELETE FROM video WHERE id = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(
+                "DELETE FROM video WHERE id = ?");
             ps.setInt(1, id);
             ps.executeUpdate();
             ps.close();
+
             System.out.println("Video eliminado id=" + id);
 
         } catch (SQLException e) {
             System.out.println("Error al eliminar video: "
                     + e.getMessage());
         } finally {
-            try { if (con != null) con.close(); } catch (Exception ex) { }
+            try { if (con != null) con.close(); } catch (Exception ex) {}
         }
     }
 }

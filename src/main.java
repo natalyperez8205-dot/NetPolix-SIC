@@ -1,14 +1,11 @@
-import dao.Usuario_Dao;
-import modelo.Usuario;
-import vista.Registro_Usuario;
 import vista.Login;
+import javax.swing.*;
 
-	public class main {
-
-	    public static void main(String[] args) {
-
-	        Login login = new Login();
-
-	        login.setVisible(true);
-	    }
-	}
+public class main {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Login login = new Login();
+            login.setVisible(true);
+        });
+    }
+}

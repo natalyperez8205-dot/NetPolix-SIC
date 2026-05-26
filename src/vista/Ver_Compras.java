@@ -3,10 +3,8 @@ package vista;
 import dao.Carrito_Dao;
 import dao.Usuario_Dao;
 import dao.Video_Dao;
-
 import modelo.Usuario;
 import modelo.Video;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
@@ -15,112 +13,120 @@ public class Ver_Compras extends JFrame {
 
     JTextArea areaCompras;
 
-    public Ver_Compras(){
+    public Ver_Compras() {
 
-        setTitle("Compras");
+        setTitle("NetPOLIx — Ver Compras");
+        setSize(600, 560);
+        setLayout(null);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getContentPane().setBackground(Estilos.FONDO);
 
-        setSize(500,500);
+        // HEADER
+        JPanel header = new JPanel(null);
+        header.setBounds(0, 0, 600, 65);
+        header.setBackground(Estilos.PANEL);
 
-        setLayout(new BorderLayout());
+        JLabel lblNet = new JLabel("NET");
+        lblNet.setBounds(20, 10, 100, 45);
+        lblNet.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblNet.setForeground(Estilos.ACENTO);
+        header.add(lblNet);
 
-        setDefaultCloseOperation(
-                JFrame.DISPOSE_ON_CLOSE);
+        JLabel lblPolix = new JLabel("POLIx");
+        lblPolix.setBounds(93, 10, 140, 45);
+        lblPolix.setFont(new Font("SansSerif", Font.BOLD, 34));
+        lblPolix.setForeground(Estilos.TEXTO);
+        header.add(lblPolix);
 
-        areaCompras =
-                new JTextArea();
+        JLabel lblSub = new JLabel("🛒  Reporte de compras");
+        lblSub.setBounds(280, 22, 290, 22);
+        lblSub.setFont(Estilos.FUENTE_SUBTIT);
+        lblSub.setForeground(Estilos.TEXTO_GRIS);
+        header.add(lblSub);
+        add(header);
 
+        // ÁREA DE TEXTO
+        areaCompras = new JTextArea();
         areaCompras.setEditable(false);
+        Estilos.area(areaCompras);
 
-        JScrollPane scroll =
-                new JScrollPane(areaCompras);
+        JScrollPane scroll = new JScrollPane(areaCompras);
+        scroll.setBounds(20, 80, 550, 400);
+        Estilos.scroll(scroll);
+        add(scroll);
 
-        add(scroll, BorderLayout.CENTER);
+        // BOTONES
+        JButton btnRefrescar = new JButton("🔄 Refrescar");
+        btnRefrescar.setBounds(20, 495, 160, 38);
+        Estilos.botonPrincipal(btnRefrescar);
+        add(btnRefrescar);
 
-        JButton btnVolver =
-                new JButton("Volver");
+        JButton btnVolver = new JButton("← Volver");
+        btnVolver.setBounds(410, 495, 160, 38);
+        Estilos.botonSecundario(btnVolver);
+        add(btnVolver);
 
-        add(btnVolver,
-                BorderLayout.SOUTH);
-
-        btnVolver.addActionListener(
-                e -> dispose());
+        btnRefrescar.addActionListener(e -> mostrarCompras());
+        btnVolver.addActionListener(e -> dispose());
 
         mostrarCompras();
-
+        setLocationRelativeTo(null);
     }
 
-    public void mostrarCompras(){
+    private void mostrarCompras() {
+        Carrito_Dao carritoDao = new Carrito_Dao();
+        Usuario_Dao usuarioDao = new Usuario_Dao();
+        Video_Dao videoDao     = new Video_Dao();
 
-        Carrito_Dao carritoDao =
-                new Carrito_Dao();
-
-        Usuario_Dao usuarioDao =
-                new Usuario_Dao();
-
-        Video_Dao videoDao =
-                new Video_Dao();
-
-        Map<Integer,
-                Map<Integer,Integer>>
-                datos =
+        Map<Integer, Map<Integer, Integer>> datos =
                 carritoDao.obtenerTodosLosCarritos();
 
-        String texto = "";
+        if (datos.isEmpty()) {
+            areaCompras.setText("  No hay compras registradas aún.");
+            return;
+        }
 
-        for(Integer idUsuario
-                : datos.keySet()){
+        StringBuilder sb = new StringBuilder();
 
-            Usuario usuario =
-                    usuarioDao.buscarUsuarioPorId(
-                            idUsuario);
+        for (Integer idUsuario : datos.keySet()) {
+            Usuario usuario = usuarioDao.buscarUsuarioPorId(idUsuario);
 
-            if(usuario != null){
-
-                texto +=
-                        "USUARIO: "
-                        + usuario.getNombre()
-                        + "\n"
-
-                        + "CORREO: "
-                        + usuario.getCorreo()
-                        + "\n\n";
+            sb.append("┌─────────────────────────────────────────────┐\n");
+            if (usuario != null) {
+                sb.append("│  👤 ").append(usuario.getNombre()).append("\n");
+                sb.append("│  ✉  ").append(usuario.getCorreo()).append("\n");
+            } else {
+                sb.append("│  👤 Usuario ID: ").append(idUsuario).append("\n");
             }
+            sb.append("│\n");
 
-            Map<Integer,Integer>
-                    carrito =
-                    datos.get(idUsuario);
+            Map<Integer, Integer> carrito = datos.get(idUsuario);
+            double total = 0;
 
-            for(Integer idVideo
-                    : carrito.keySet()){
-
-                Video video =
-                        videoDao.buscarPorId(idVideo);
-
-                if(video != null){
-
-                    texto +=
-                            "PELÍCULA: "
-                            + video.getTituloOriginal()
-                            + "\n"
-
-                            + "CATEGORÍA: "
-                            + video.getCategoria()
-                            + "\n"
-
-                            + "PRECIO: "
-                            + video.getPrecio()
-                            + "\n"
-
-                            + "CANTIDAD: "
-                            + carrito.get(idVideo)
-                            + "\n\n";
+            for (Integer idVideo : carrito.keySet()) {
+                Video video = videoDao.buscarPorId(idVideo);
+                int cantidad = carrito.get(idVideo);
+                if (video != null) {
+                    double sub = video.getPrecio() * cantidad;
+                    total += sub;
+                    sb.append("│  🎬 ").append(video.getTituloOriginal()).append("\n");
+                    sb.append("│     Categoría: ").append(video.getCategoria()).append("\n");
+                    sb.append("│     Precio: $").append(
+                            String.format("%.2f", video.getPrecio()));
+                    sb.append("  x").append(cantidad);
+                    sb.append("  Subtotal: $").append(
+                            String.format("%.2f", sub)).append("\n");
+                    sb.append("│\n");
                 }
             }
 
-            texto +=
-                    "----------------------\n";
+            sb.append("│  💰 TOTAL: $").append(
+                    String.format("%.2f", total)).append("\n");
+            sb.append("└─────────────────────────────────────────────┘\n\n");
         }
 
-        areaCompras.setText(texto);
+        areaCompras.setText(sb.toString());
+        areaCompras.setCaretPosition(0);
     }
 }

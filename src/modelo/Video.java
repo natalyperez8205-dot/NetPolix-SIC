@@ -27,29 +27,42 @@ public class Video {
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
     public String getTituloOriginal() { return tituloOriginal; }
     public void setTituloOriginal(String tituloOriginal) {
         this.tituloOriginal = tituloOriginal;
     }
+
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
+
     public String getActores() { return actores; }
     public void setActores(String actores) { this.actores = actores; }
+
     public int getDuracion() { return duracion; }
     public void setDuracion(int duracion) { this.duracion = duracion; }
+
     public int getEdadRestriccion() { return edadRestriccion; }
-    public void setEdadRestriccion(int i) { this.edadRestriccion = i; }
+    public void setEdadRestriccion(int edadRestriccion) {
+        this.edadRestriccion = edadRestriccion;
+    }
+
     public String getIdioma() { return idioma; }
     public void setIdioma(String idioma) { this.idioma = idioma; }
+
     public double getPrecio() { return precio; }
     public void setPrecio(double precio) { this.precio = precio; }
 
     @Override
     public String toString() {
-        return tituloOriginal + " | " + categoria + " | " + edadRestriccion + " | " + idioma + " | " + duracion + " min";
+        String titulo = (tituloOriginal == null || tituloOriginal.isEmpty())
+                ? "(Sin título)" : tituloOriginal;
+        String cat = (categoria == null || categoria.isEmpty())
+                ? "(Sin categoría)" : categoria;
+        String dur = duracion == 0
+                ? "(Sin duración)" : duracion + " min";
+        String prec = precio == 0
+                ? "(Sin precio)" : "$" + String.format("%.2f", precio);
+        return titulo + "  |  " + cat + "  |  " + dur + "  |  " + prec;
     }
 }
-
-//Canibrouston
-
-//aaaa
