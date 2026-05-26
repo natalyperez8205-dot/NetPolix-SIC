@@ -54,7 +54,7 @@ public class Carrito extends JFrame {
         header.add(lblSub);
         add(header);
 
-        // SALDO DISPONIBLE
+        // SALDO
         lblSaldo = new JLabel("Saldo disponible: $0.00");
         lblSaldo.setBounds(20, 78, 400, 22);
         lblSaldo.setFont(Estilos.FUENTE_SUBTIT);
@@ -102,8 +102,9 @@ public class Carrito extends JFrame {
         // EVENTOS
         btnEliminar.addActionListener(e -> {
             String sel = listaCarrito.getSelectedValue();
-            if (sel == null || sel.startsWith("  El carrito")) {
-                JOptionPane.showMessageDialog(null, "Selecciona un elemento.");
+            if (sel == null || sel.contains("vacío")) {
+                JOptionPane.showMessageDialog(null,
+                        "Selecciona un elemento.");
                 return;
             }
             int idVideo = extraerIdVideo(sel);
@@ -114,13 +115,15 @@ public class Carrito extends JFrame {
         });
 
         btnComprar.addActionListener(e -> {
+
             if (modeloCarrito.isEmpty()
                     || modeloCarrito.get(0).contains("vacío")) {
-                JOptionPane.showMessageDialog(null, "Tu carrito está vacío.");
+                JOptionPane.showMessageDialog(null,
+                        "Tu carrito está vacío.");
                 return;
             }
 
-            // Calcular total
+            // Calcular total y puntos
             Map<Integer, Integer> items =
                     carritoDao.obtenerCarrito(usuario.getId());
             double total = 0;
@@ -130,7 +133,7 @@ public class Carrito extends JFrame {
                 Video v = videoDao.buscarPorId(entry.getKey());
                 if (v != null) {
                     total += v.getPrecio() * entry.getValue();
-                    puntosGanados += 2 * entry.getValue(); // 2 puntos por compra
+                    puntosGanados += 2 * entry.getValue();
                 }
             }
 
@@ -139,8 +142,10 @@ public class Carrito extends JFrame {
             if (saldoActual < total) {
                 JOptionPane.showMessageDialog(null,
                         "❌ Saldo insuficiente.\n"
-                        + "Saldo disponible: $" + String.format("%.2f", saldoActual)
-                        + "\nTotal a pagar: $" + String.format("%.2f", total),
+                        + "Saldo disponible: $"
+                        + String.format("%.2f", saldoActual)
+                        + "\nTotal a pagar: $"
+                        + String.format("%.2f", total),
                         "Saldo insuficiente",
                         JOptionPane.ERROR_MESSAGE);
                 return;
@@ -149,7 +154,8 @@ public class Carrito extends JFrame {
             int confirm = JOptionPane.showConfirmDialog(null,
                     "¿Confirmar compra?\n"
                     + "Total: $" + String.format("%.2f", total)
-                    + "\nSaldo actual: $" + String.format("%.2f", saldoActual)
+                    + "\nSaldo actual: $"
+                    + String.format("%.2f", saldoActual)
                     + "\nSaldo después: $"
                     + String.format("%.2f", saldoActual - total)
                     + "\nPuntos a ganar: +" + puntosGanados,
@@ -157,9 +163,33 @@ public class Carrito extends JFrame {
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
+
                 boolean ok = usuarioDao.descontarSaldo(
                         usuario.getId(), total);
+
                 if (ok) {
+                    // Registrar compra en BD
+                    int idCompra = usuarioDao.registrarCompra(
+                            usuario.getId(), total, puntosGanados);
+
+                    // Registrar detalle de cada video
+                    if (idCompra > 0) {
+                        for (Map.Entry<Integer, Integer> entry
+                                : items.entrySet()) {
+                            Video v = videoDao.buscarPorId(entry.getKey());
+                            if (v != null) {
+                                double sub = v.getPrecio()
+                                           * entry.getValue();
+                                usuarioDao.registrarDetalleCompra(
+                                        idCompra,
+                                        entry.getKey(),
+                                        entry.getValue(),
+                                        sub);
+                            }
+                        }
+                    }
+
+                    // Sumar puntos y vaciar carrito
                     usuarioDao.sumarPuntos(usuario.getId(), puntosGanados);
                     carritoDao.vaciarCarrito(usuario.getId());
 
@@ -167,7 +197,8 @@ public class Carrito extends JFrame {
                             usuario.getId());
 
                     String msg = "🎉 ¡Compra realizada con éxito!\n"
-                            + "Total pagado: $" + String.format("%.2f", total)
+                            + "Total pagado: $"
+                            + String.format("%.2f", total)
                             + "\nPuntos ganados: +" + puntosGanados
                             + "\nPuntos totales: " + puntosActuales;
 
@@ -181,6 +212,7 @@ public class Carrito extends JFrame {
                             JOptionPane.INFORMATION_MESSAGE);
 
                     cargarCarrito();
+
                 } else {
                     JOptionPane.showMessageDialog(null,
                             "❌ Error al procesar el pago.",
@@ -198,9 +230,9 @@ public class Carrito extends JFrame {
     private void cargarCarrito() {
         modeloCarrito.clear();
 
-        // Actualizar saldo desde BD
         double saldo = usuarioDao.obtenerSaldo(usuario.getId());
-        lblSaldo.setText("Saldo disponible: $" + String.format("%.2f", saldo));
+        lblSaldo.setText("Saldo disponible: $"
+                + String.format("%.2f", saldo));
 
         Map<Integer, Integer> items =
                 carritoDao.obtenerCarrito(usuario.getId());
@@ -218,7 +250,8 @@ public class Carrito extends JFrame {
                 double sub = v.getPrecio() * e.getValue();
                 total += sub;
                 modeloCarrito.addElement(
-                    "  " + v.getId() + " — " + v.getTituloOriginal()
+                    "  " + v.getId() + " — "
+                    + v.getTituloOriginal()
                     + "   |   x" + e.getValue()
                     + "   |   $" + String.format("%.2f", sub));
             }
@@ -228,7 +261,8 @@ public class Carrito extends JFrame {
 
     private int extraerIdVideo(String texto) {
         try {
-            return Integer.parseInt(texto.trim().split("—")[0].trim());
+            return Integer.parseInt(
+                    texto.trim().split("—")[0].trim());
         } catch (Exception ex) { return -1; }
     }
 }
