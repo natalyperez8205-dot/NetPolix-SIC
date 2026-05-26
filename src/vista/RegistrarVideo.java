@@ -103,7 +103,9 @@ public class RegistrarVideo extends JFrame {
                 video.setCategoria(txtCategoria.getText());
                 video.setActores(txtActores.getText());
                 video.setDuracion(Integer.parseInt(txtDuracion.getText()));
-                video.setEdadRestriccion(txtEdadRestriccion.getText());
+                video.setEdadRestriccion(
+                	    Integer.parseInt(
+                	        txtEdadRestriccion.getText()));
                 video.setIdioma(txtIdioma.getText());
                 video.setPrecio(Double.parseDouble(txtPrecio.getText()));
 

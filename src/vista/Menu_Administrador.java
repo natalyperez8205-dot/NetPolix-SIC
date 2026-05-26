@@ -1,46 +1,176 @@
 package vista;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import vista.RegistrarVideo;
-import vista.Login;
+import javax.swing.*;
 
 public class Menu_Administrador extends JFrame {
 
     JLabel lblTitulo;
 
     JButton btnRegistrarVideo;
+    JButton btnVerCatalogo;
+    JButton btnVerUsuarios;
+    JButton btnVerCompras;
+    JButton btnGestionarIdiomas;
     JButton btnCerrarSesion;
 
     public Menu_Administrador(){
 
-        setTitle("Menu Administrador");
-        setSize(500,450);
-        setLayout(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Panel Administrador");
 
-        lblTitulo = new JLabel("BIENVENIDO ADMINISTRADOR");
-        lblTitulo.setBounds(120,100,250,30);
+        setSize(500,550);
+
+        setLayout(null);
+
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE);
+
+        lblTitulo = new JLabel(
+                "PANEL ADMINISTRADOR");
+
+        lblTitulo.setBounds(
+                130,40,250,30);
+
         add(lblTitulo);
 
-        btnRegistrarVideo = new JButton("Registrar Video");
-        btnRegistrarVideo.setBounds(140,180,180,40);
+        // BOTON REGISTRAR VIDEO
+
+        btnRegistrarVideo =
+                new JButton(
+                        "Registrar Video");
+
+        btnRegistrarVideo.setBounds(
+                140,100,180,40);
+
         add(btnRegistrarVideo);
 
-        btnCerrarSesion = new JButton("Cerrar sesión");
-        btnCerrarSesion.setBounds(140,250,180,40);
+        // BOTON GESTIONAR CATALOGO
+
+        btnVerCatalogo =
+                new JButton(
+                        "Gestionar Catalogo");
+
+        btnVerCatalogo.setBounds(
+                140,160,180,40);
+
+        add(btnVerCatalogo);
+
+        // BOTON VER USUARIOS
+
+        btnVerUsuarios =
+                new JButton(
+                        "Ver Usuarios");
+
+        btnVerUsuarios.setBounds(
+                140,220,180,40);
+
+        add(btnVerUsuarios);
+
+        // BOTON VER COMPRAS
+
+        btnVerCompras =
+                new JButton(
+                        "Ver Compras");
+
+        btnVerCompras.setBounds(
+                140,280,180,40);
+
+        add(btnVerCompras);
+
+        // BOTON GESTIONAR IDIOMAS
+
+        btnGestionarIdiomas =
+                new JButton(
+                        "Gestionar Idiomas");
+
+        btnGestionarIdiomas.setBounds(
+                140,340,180,40);
+
+        add(btnGestionarIdiomas);
+
+        // BOTON CERRAR SESION
+
+        btnCerrarSesion =
+                new JButton(
+                        "Cerrar Sesión");
+
+        btnCerrarSesion.setBounds(
+                140,420,180,40);
+
         add(btnCerrarSesion);
 
-        btnRegistrarVideo.addActionListener(e -> {
-            RegistrarVideo ventana = new RegistrarVideo();
+        // EVENTO REGISTRAR VIDEO
+
+        btnRegistrarVideo
+                .addActionListener(e -> {
+
+            RegistrarVideo ventana =
+                    new RegistrarVideo();
+
             ventana.setVisible(true);
+
         });
 
-        btnCerrarSesion.addActionListener(e -> {
-            Login login = new Login();
-            login.setVisible(true);
-            dispose();
+        // EVENTO GESTIONAR CATALOGO
+
+        btnVerCatalogo
+                .addActionListener(e -> {
+
+            Catalogo_Video ventana =
+                    new Catalogo_Video();
+
+            ventana.setVisible(true);
+
         });
+
+        // EVENTO VER USUARIOS
+
+        btnVerUsuarios
+                .addActionListener(e -> {
+
+            VerUsuario ventana =
+                    new VerUsuario();
+
+            ventana.setVisible(true);
+
+        });
+
+        // EVENTO VER COMPRAS
+
+        btnVerCompras
+                .addActionListener(e -> {
+
+            Ver_Compras ventana =
+                    new Ver_Compras();
+
+            ventana.setVisible(true);
+
+        });
+
+        // EVENTO GESTIONAR IDIOMAS
+
+        btnGestionarIdiomas
+                .addActionListener(e -> {
+
+            GestionarIdioma ventana =
+                    new GestionarIdioma();
+
+            ventana.setVisible(true);
+
+        });
+
+        // EVENTO CERRAR SESION
+
+        btnCerrarSesion
+                .addActionListener(e -> {
+
+            Login login =
+                    new Login();
+
+            login.setVisible(true);
+
+            dispose();
+
+        });
+
     }
 }
