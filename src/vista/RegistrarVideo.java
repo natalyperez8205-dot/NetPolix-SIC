@@ -1,8 +1,13 @@
 package vista;
 
 import dao.Video_Dao;
+import dao.Categoria_Dao;
+import dao.Usuario_Dao;
 import modelo.Video;
+import modelo.Categoria;
+import modelo.Usuario;
 import javax.swing.*;
+import java.util.List;
 
 public class RegistrarVideo extends JFrame {
 
@@ -15,8 +20,8 @@ public class RegistrarVideo extends JFrame {
     JLabel lblPrecio;
 
     JTextField txtTitulo;
-    JTextField txtCategoria;
-    JTextField txtActores;
+    JComboBox<String> cbCategoria;
+    JComboBox<String> cbActores;
     JTextField txtDuracion;
     JTextField txtEdadRestriccion;
     JTextField txtIdioma;
@@ -44,17 +49,25 @@ public class RegistrarVideo extends JFrame {
         lblCategoria.setBounds(40,90,120,25);
         add(lblCategoria);
 
-        txtCategoria = new JTextField();
-        txtCategoria.setBounds(180,90,260,25);
-        add(txtCategoria);
+        cbCategoria = new JComboBox<>();
+        cbCategoria.setBounds(180,90,200,25);
+        add(cbCategoria);
+
+        JButton btnNuevaCategoria = new JButton("Nueva categoría");
+        btnNuevaCategoria.setBounds(390,90,140,25);
+        add(btnNuevaCategoria);
 
         lblActores = new JLabel("Actores:");
         lblActores.setBounds(40,140,120,25);
         add(lblActores);
 
-        txtActores = new JTextField();
-        txtActores.setBounds(180,140,260,25);
-        add(txtActores);
+        cbActores = new JComboBox<>();
+        cbActores.setBounds(180,140,200,25);
+        add(cbActores);
+
+        JButton btnNuevoActor = new JButton("Registrar actor");
+        btnNuevoActor.setBounds(390,140,140,25);
+        add(btnNuevoActor);
 
         lblDuracion = new JLabel("Duración (min):");
         lblDuracion.setBounds(40,190,120,25);
@@ -100,8 +113,10 @@ public class RegistrarVideo extends JFrame {
             try {
                 Video video = new Video();
                 video.setTituloOriginal(txtTitulo.getText());
-                video.setCategoria(txtCategoria.getText());
-                video.setActores(txtActores.getText());
+                String categoria = (String) cbCategoria.getSelectedItem();
+                String actor = (String) cbActores.getSelectedItem();
+                video.setCategoria(categoria != null ? categoria : "");
+                video.setActores(actor != null ? actor : "");
                 video.setDuracion(Integer.parseInt(txtDuracion.getText()));
                 video.setEdadRestriccion(txtEdadRestriccion.getText());
                 video.setIdioma(txtIdioma.getText());
@@ -114,8 +129,6 @@ public class RegistrarVideo extends JFrame {
                         "Película registrada correctamente");
 
                 txtTitulo.setText("");
-                txtCategoria.setText("");
-                txtActores.setText("");
                 txtDuracion.setText("");
                 txtEdadRestriccion.setText("");
                 txtIdioma.setText("");
@@ -126,6 +139,57 @@ public class RegistrarVideo extends JFrame {
             }
         });
 
+        // populate combo boxes
+        cargarCategorias();
+        cargarActores();
+
+        btnNuevoActor.addActionListener(a -> {
+            RegistrarActor ra = new RegistrarActor();
+            ra.setVisible(true);
+        });
+
+        btnNuevaCategoria.addActionListener(a -> {
+            RegistrarCategoria rc = new RegistrarCategoria();
+            rc.setVisible(true);
+        });
+
+        // buttons to refresh lists
+        JButton btnRefCats = new JButton("Refrescar cat.");
+        btnRefCats.setBounds(390,120,140,20);
+        add(btnRefCats);
+        btnRefCats.addActionListener(a -> cargarCategorias());
+
+        JButton btnRefAct = new JButton("Refrescar act.");
+        btnRefAct.setBounds(390,160,140,20);
+        add(btnRefAct);
+        btnRefAct.addActionListener(a -> cargarActores());
+
         btnVolver.addActionListener(e -> dispose());
+    }
+
+    private void cargarCategorias() {
+        cbCategoria.removeAllItems();
+        try {
+            Categoria_Dao dao = new Categoria_Dao();
+            List<Categoria> cats = dao.listarCategorias();
+            for (Categoria c : cats) {
+                cbCategoria.addItem(c.getNombre());
+            }
+        } catch (Exception e) {
+            System.out.println("Error cargando categorias: " + e.getMessage());
+        }
+    }
+
+    private void cargarActores() {
+        cbActores.removeAllItems();
+        try {
+            Usuario_Dao dao = new Usuario_Dao();
+            List<Usuario> actores = dao.listarActores();
+            for (Usuario u : actores) {
+                cbActores.addItem(u.getNombre());
+            }
+        } catch (Exception e) {
+            System.out.println("Error cargando actores: " + e.getMessage());
+        }
     }
 }
